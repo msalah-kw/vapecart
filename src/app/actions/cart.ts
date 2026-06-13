@@ -1,0 +1,176 @@
+"use server";
+
+import {
+  fetchGraphQL,
+  GET_CART_QUERY,
+  ADD_TO_CART_MUTATION,
+  UPDATE_CART_QUANTITY_MUTATION,
+  REMOVE_FROM_CART_MUTATION,
+  CHECKOUT_MUTATION,
+} from "@/lib/graphql";
+
+export async function getCartAction(sessionToken?: string) {
+  try {
+    const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+      GET_CART_QUERY,
+      {},
+      sessionToken
+    );
+    return {
+      success: true,
+      cart: data?.cart || null,
+      sessionToken: newSessionToken || sessionToken || null,
+    };
+  } catch (error: any) {
+    console.error("getCartAction error:", error);
+    return {
+      success: false,
+      error: error.message || "فشلت عملية جلب السلة",
+      sessionToken: sessionToken || null,
+    };
+  }
+}
+
+export async function addToCartAction(
+  productId: number,
+  quantity: number,
+  variationId?: number,
+  sessionToken?: string
+) {
+  try {
+    const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+      ADD_TO_CART_MUTATION,
+      { productId, quantity, variationId },
+      sessionToken
+    );
+    
+    // After adding to cart, let's fetch the updated cart automatically
+    const updatedCart = await getCartAction(newSessionToken || sessionToken);
+    
+    return {
+      success: true,
+      cartItem: data?.addToCart?.cartItem || null,
+      cart: updatedCart.cart,
+      sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
+    };
+  } catch (error: any) {
+    console.error("addToCartAction error:", error);
+    return {
+      success: false,
+      error: error.message || "فشلت عملية إضافة المنتج إلى السلة",
+      sessionToken: sessionToken || null,
+    };
+  }
+}
+
+export async function updateCartQuantityAction(
+  key: string,
+  quantity: number,
+  sessionToken?: string
+) {
+  try {
+    const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+      UPDATE_CART_QUANTITY_MUTATION,
+      { key, quantity },
+      sessionToken
+    );
+    
+    const updatedCart = await getCartAction(newSessionToken || sessionToken);
+    
+    return {
+      success: true,
+      cart: updatedCart.cart,
+      sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
+    };
+  } catch (error: any) {
+    console.error("updateCartQuantityAction error:", error);
+    return {
+      success: false,
+      error: error.message || "فشلت عملية تحديث الكمية",
+      sessionToken: sessionToken || null,
+    };
+  }
+}
+
+export async function removeFromCartAction(
+  keys: string[],
+  sessionToken?: string
+) {
+  try {
+    const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+      REMOVE_FROM_CART_MUTATION,
+      { keys },
+      sessionToken
+    );
+    
+    const updatedCart = await getCartAction(newSessionToken || sessionToken);
+    
+    return {
+      success: true,
+      cart: updatedCart.cart,
+      sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
+    };
+  } catch (error: any) {
+    console.error("removeFromCartAction error:", error);
+    return {
+      success: false,
+      error: error.message || "فشلت عملية إزالة المنتج من السلة",
+      sessionToken: sessionToken || null,
+    };
+  }
+}
+
+export async function checkoutAction(
+  firstName: string,
+  lastName: string,
+  phone: string,
+  address1: string,
+  city: string,
+  sessionToken?: string
+) {
+  try {
+    const email = `${phone}@vapecart.local`;
+    const input = {
+      clientMutationId: "vapecart-checkout",
+      billing: {
+        firstName,
+        lastName,
+        phone,
+        address1,
+        city,
+        country: "KW",
+        email,
+      },
+      shipping: {
+        firstName,
+        lastName,
+        phone,
+        address1,
+        city,
+        country: "KW",
+      },
+      paymentMethod: "cod",
+      shipToDifferentAddress: false,
+    };
+
+    const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+      CHECKOUT_MUTATION,
+      { input },
+      sessionToken
+    );
+
+    return {
+      success: true,
+      order: data?.checkout?.order || null,
+      result: data?.checkout?.result || null,
+      sessionToken: newSessionToken || sessionToken || null,
+    };
+  } catch (error: any) {
+    console.error("checkoutAction error:", error);
+    return {
+      success: false,
+      error: error.message || "فشلت عملية إتمام الطلب",
+      sessionToken: sessionToken || null,
+    };
+  }
+}
