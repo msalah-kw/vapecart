@@ -8,22 +8,21 @@ import {
 } from "@/lib/graphql";
 import ProductCard from "@/app/components/ProductCard";
 
-/* ─── Category Icon Map ─── */
-const CATEGORY_ICONS: Record<string, string> = {
-  disposable: "💨",
-  pods: "🔋",
-  "pod-system": "🔌",
-  "freebase-eliquids": "🧪",
-  "saltnic-flavors": "🧂",
-  coils: "⚡",
-  hookah: "🫧",
-  iqos: "🚬",
-  tobacco: "🍂",
-  "nicotine-pouches": "📦",
-};
-
-/* ─── Featured Categories (homepage hero cards) ─── */
-const FEATURED_SLUGS = ["disposable", "pod-system", "freebase-eliquids"];
+/* ─── Homepage Categories Config ─── */
+const HOMEPAGE_CATEGORIES = [
+  { name: "فيب", slug: "vape", icon: "💨" },
+  { name: "سحبة زقارة", slug: "pod-system", icon: "🔌" },
+  { name: "سحبات جاهزة", slug: "disposable", icon: "🔋" },
+  { name: "نكهات فيب", slug: "freebase-eliquids", icon: "🧪" },
+  { name: "نكهات سولت", slug: "saltnic-flavors", icon: "🧂" },
+  { name: "بودات جاهزة", slug: "closed-pods", icon: "📦" },
+  { name: "بودات تعبئة", slug: "refillable-pods", icon: "🔄" },
+  { name: "كويلات", slug: "coils", icon: "⚡" },
+  { name: "ايقوص", slug: "iqos", icon: "🚬" },
+  { name: "اكياس نيكوتين", slug: "nicotine-pouches", icon: "📦" },
+  { name: "زقاير وتبغ", slug: "tobacco", icon: "🍂" },
+  { name: "شيشة ومعسل", slug: "hookah", icon: "🫧" },
+];
 
 export default async function HomePage() {
   /* Fetch data in parallel */
@@ -35,11 +34,6 @@ export default async function HomePage() {
   const products: WooProduct[] = productsRes.data?.products?.nodes ?? [];
   const allCategories: WooCategory[] =
     categoriesRes.data?.productCategories?.nodes ?? [];
-
-  /* Filter to top-level featured categories */
-  const featuredCategories = FEATURED_SLUGS.map((slug) =>
-    allCategories.find((c) => c.slug === slug)
-  ).filter(Boolean) as WooCategory[];
 
   return (
     <>
@@ -64,7 +58,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
+ 
       {/* ═══ Featured Categories ═══ */}
       <section className="section" id="categories">
         <div className="container">
@@ -76,22 +70,24 @@ export default async function HomePage() {
           </div>
 
           <div className="categories-grid">
-            {featuredCategories.map((cat) => (
-              <Link
-                href={`/category/${cat.slug}`}
-                key={cat.id}
-                className="category-card"
-                id={`category-${cat.slug}`}
-              >
-                <div className="category-icon">
-                  {CATEGORY_ICONS[cat.slug] || "📦"}
-                </div>
-                <h3>{cat.name}</h3>
-                <span className="category-count">
-                  {cat.count} منتج
-                </span>
-              </Link>
-            ))}
+            {HOMEPAGE_CATEGORIES.map((cat) => {
+              const wooCat = allCategories.find((c) => c.slug === cat.slug);
+              const count = wooCat ? wooCat.count : 0;
+              return (
+                <Link
+                  href={`/category/${cat.slug}`}
+                  key={cat.slug}
+                  className="category-card"
+                  id={`category-${cat.slug}`}
+                >
+                  <div className="category-icon">{cat.icon}</div>
+                  <h3>{cat.name}</h3>
+                  <span className="category-count">
+                    {count} منتج
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-import CartBadge from "@/app/components/CartBadge";
+import Header from "@/app/components/Header";
 
 export const metadata: Metadata = {
   title: "VapeCart – متجر فيب إلكتروني | الكويت",
@@ -21,23 +20,7 @@ export default function RootLayout({
         <CartProvider>
           <div className="page-wrapper">
             {/* ─── Header ─── */}
-            <header className="site-header">
-              <div className="header-inner">
-                <Link href="/" className="site-logo">
-                  Vape<span>Cart</span>
-                </Link>
-                <nav className="nav-links">
-                  <Link href="/">الرئيسية</Link>
-                  <Link href="/shop">المتجر</Link>
-                  <Link href="/category/disposable">سحبات جاهزة</Link>
-                  <Link href="/category/pods">بودات</Link>
-                  <Link href="/cart" className="header-cart-link">
-                    السلة
-                    <CartBadge />
-                  </Link>
-                </nav>
-              </div>
-            </header>
+            <Header />
 
             {/* ─── Main Content ─── */}
             <main>{children}</main>

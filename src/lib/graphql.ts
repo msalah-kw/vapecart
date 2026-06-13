@@ -170,6 +170,43 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
 
 /* ─────────────── Category Queries ─────────────── */
 
+export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
+  query GetProductsByCategory($categorySlug: String!, $first: Int = 100) {
+    products(where: { category: $categorySlug }, first: $first) {
+      nodes {
+        id
+        slug
+        databaseId
+        name
+        shortDescription
+        image {
+          sourceUrl
+          altText
+        }
+        ... on SimpleProduct {
+          price
+          regularPrice
+        }
+        ... on VariableProduct {
+          price
+          regularPrice
+        }
+        productCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+    productCategory(id: $categorySlug, idType: SLUG) {
+      name
+      description
+      count
+    }
+  }
+`;
+
 export const GET_CATEGORIES_QUERY = `
   query GetCategories {
     productCategories(first: 50, where: { hideEmpty: true }) {
