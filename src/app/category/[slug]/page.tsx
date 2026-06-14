@@ -45,7 +45,7 @@ export async function generateMetadata({
 
     if (!category) {
       return {
-        title: "القسم غير موجود | VapeCart",
+        title: "القسم غير موجود | سحبة فيب",
         description: "عذراً، هذا القسم غير متوفر حالياً.",
       };
     }
@@ -53,16 +53,16 @@ export async function generateMetadata({
     const cleanTitle = sanitizeTerminology(category.name);
     const cleanDesc = category.description
       ? sanitizeTerminology(category.description)
-      : `تصفح منتجات قسم ${cleanTitle} في متجر VapeCart بأفضل الأسعار وتوصيل سريع في الكويت.`;
+      : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
     return {
-      title: `${cleanTitle} – VapeCart`,
+      title: `${cleanTitle} – سحبة فيب`,
       description: cleanDesc.slice(0, 160),
     };
   } catch (error) {
     console.error("Error generating metadata for category page:", error);
     return {
-      title: "تصفح القسم | VapeCart",
+      title: "تصفح القسم | سحبة فيب",
       description: "تصفح منتجات الفيب حسب القسم.",
     };
   }

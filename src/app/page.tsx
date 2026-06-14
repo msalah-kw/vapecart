@@ -37,25 +37,16 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ═══ Hero Section ═══ */}
-      <section className="hero" id="hero">
+      {/* ═══ Hero Banner Section ═══ */}
+      <section className="hero-banner" id="hero-banner">
         <div className="container">
-          <div className="hero-content">
-            <span className="hero-badge">متجر الكويت الأول للفيب</span>
-            <h1>تسوّق أفضل السحبات والنكهات</h1>
-            <p>
-              تشكيلة واسعة من سحبات جاهزة، بودات، ونكهات فيب وسولت بأسعار
-              منافسة. توصيل سريع لجميع مناطق الكويت.
-            </p>
-            <div className="hero-actions">
-              <Link href="/shop" className="btn btn-primary">
-                تصفح المتجر
-              </Link>
-              <Link href="/category/disposable" className="btn btn-outline">
-                سحبات جاهزة
-              </Link>
-            </div>
-          </div>
+          <Link href="/shop" className="banner-link">
+            <img 
+              src="https://sahbavape.com/wp-content/uploads/2026/06/بانر.webp" 
+              alt="سحبة فيب - تسوق أفضل السحبات والنكهات في الكويت" 
+              className="banner-image"
+            />
+          </Link>
         </div>
       </section>
  

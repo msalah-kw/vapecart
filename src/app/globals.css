@@ -190,15 +190,16 @@ ul, ol {
 }
 
 .site-logo {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--color-text-primary);
-  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
   transition: transform var(--transition-fast);
 }
 
-.site-logo span {
-  color: var(--color-accent);
+.site-logo img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .site-logo:hover {
@@ -608,6 +609,32 @@ ul, ol {
   }
 }
 
+
+/* ─── Hero Banner ─── */
+.hero-banner {
+  padding: var(--space-md) 0 var(--space-xl);
+}
+
+.banner-link {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.banner-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
 
 /* ═══════════════════════════════════════════════════════
    HERO SECTION

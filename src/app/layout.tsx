@@ -4,7 +4,7 @@ import { CartProvider } from "@/context/CartContext";
 import Header from "@/app/components/Header";
 
 export const metadata: Metadata = {
-  title: "VapeCart – متجر فيب إلكتروني | الكويت",
+  title: "سحبة فيب – متجر فيب إلكتروني | الكويت",
   description:
     "أفضل متجر فيب إلكتروني في الكويت. سحبات جاهزة، بودات، نكهات سولت ونكهات فيب بأسعار منافسة وتوصيل سريع.",
 };
@@ -28,7 +28,7 @@ export default function RootLayout({
             {/* ─── Footer ─── */}
             <footer className="site-footer">
               <div className="container">
-                <p>© {new Date().getFullYear()} VapeCart – جميع الحقوق محفوظة</p>
+                <p>© {new Date().getFullYear()} سحبة فيب – جميع الحقوق محفوظة</p>
               </div>
             </footer>
           </div>

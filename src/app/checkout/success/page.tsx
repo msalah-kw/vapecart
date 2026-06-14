@@ -12,7 +12,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
       <div className="success-card">
         <div className="success-icon" aria-hidden="true">✓</div>
         <h1>تمت عملية الشراء بنجاح!</h1>
-        <p className="success-subtitle">شكرًا لك على تسوقك من VapeCart. تم استلام طلبك بنجاح وجاري تجهيزه للشحن.</p>
+        <p className="success-subtitle">شكرًا لك على تسوقك من سحبة فيب. تم استلام طلبك بنجاح وجاري تجهيزه للشحن.</p>
         
         <div className="order-details-box">
           <div className="order-details-row">
