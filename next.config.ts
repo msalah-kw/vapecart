@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "sahbavape.com",
         pathname: "/wp-content/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "api.sahbavape.com",
+        pathname: "/wp-content/uploads/**",
+      },
     ],
   },
 };
