@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Header from "@/app/components/Header";
+import CartToast from "@/app/components/CartToast";
 
 export const metadata: Metadata = {
   title: "سحبة فيب – متجر فيب إلكتروني | الكويت",
@@ -22,6 +23,9 @@ export default function RootLayout({
           <div className="page-wrapper">
             {/* ─── Header ─── */}
             <Header />
+
+            {/* ─── Cart Toast Popup ─── */}
+            <CartToast />
 
             {/* ─── Main Content ─── */}
             <main>{children}</main>

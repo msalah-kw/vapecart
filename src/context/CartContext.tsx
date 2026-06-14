@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import {
   getCartAction,
   addToCartAction,
@@ -47,6 +47,13 @@ export interface CartItem {
   } | null;
 }
 
+export interface ToastItem {
+  name: string;
+  image: string | null;
+  price: string | null;
+  quantity: number;
+}
+
 export interface CartData {
   contents: {
     nodes: CartItem[];
@@ -64,6 +71,9 @@ interface CartContextType {
   removeItem: (key: string) => Promise<boolean>;
   refreshCart: () => Promise<void>;
   clearCart: () => void;
+  showCartToast: boolean;
+  toastItem: ToastItem | null;
+  dismissCartToast: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -74,6 +84,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [sessionToken, setSessionToken] = useState<string | undefined>(undefined);
+  const [showCartToast, setShowCartToast] = useState(false);
+  const [toastItem, setToastItem] = useState<ToastItem | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync token from localStorage on mount
   useEffect(() => {
@@ -114,6 +127,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   };
 
+  const dismissCartToast = useCallback(() => {
+    setShowCartToast(false);
+  }, []);
+
+  const showToast = useCallback((item: ToastItem) => {
+    // Clear any existing timer
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setToastItem(item);
+    setShowCartToast(true);
+    toastTimerRef.current = setTimeout(() => {
+      setShowCartToast(false);
+    }, 3000);
+  }, []);
+
   const addToCart = async (productId: number, quantity: number, variationId?: number) => {
     setLoading(true);
     const res = await addToCartAction(productId, quantity, variationId, sessionToken);
@@ -121,6 +150,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     
     if (res.success && res.cart) {
       setCart(res.cart);
+
+      // Find the just-added item from the updated cart to build the toast
+      const addedNode = res.cart.contents.nodes.find(
+        (n: CartItem) => n.product.node.databaseId === productId
+      );
+      if (addedNode) {
+        const p = addedNode.product.node;
+        showToast({
+          name: p.name,
+          image: p.image?.sourceUrl || null,
+          price: p.price,
+          quantity,
+        });
+      }
+
       setLoading(false);
       return true;
     }
@@ -179,6 +223,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         refreshCart,
         clearCart,
+        showCartToast,
+        toastItem,
+        dismissCartToast,
       }}
     >
       {children}
