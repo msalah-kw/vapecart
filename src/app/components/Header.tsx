@@ -66,9 +66,6 @@ export default function Header() {
             <Link href="/" className={pathname === "/" ? "active-link" : ""}>
               الرئيسية
             </Link>
-            <Link href="/shop" className={pathname === "/shop" ? "active-link" : ""}>
-              المتجر
-            </Link>
 
             {CATEGORIES_CONFIG.map((cat) => {
               const hasSubs = cat.subcategories && cat.subcategories.length > 0;
@@ -157,10 +154,6 @@ export default function Header() {
           <Link href="/" className={`drawer-nav-item ${pathname === "/" ? "active" : ""}`}>
             <span className="item-icon">🏠</span>
             الرئيسية
-          </Link>
-          <Link href="/shop" className={`drawer-nav-item ${pathname === "/shop" ? "active" : ""}`}>
-            <span className="item-icon">🛍️</span>
-            المتجر
           </Link>
 
           <div className="drawer-divider">الأقسام</div>

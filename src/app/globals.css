@@ -43,11 +43,11 @@
   --color-text-secondary: #475569;
   --color-text-muted:     #94a3b8;
 
-  /* Accent – Violet/Purple */
-  --color-accent:       #7c3aed;
-  --color-accent-light: #8b5cf6;
-  --color-accent-dim:   rgba(124, 58, 237, 0.06);
-  --color-accent-glow:  rgba(124, 58, 237, 0.12);
+  /* Accent – Logo Red */
+  --color-accent:       #e61c24;
+  --color-accent-light: #ff3b43;
+  --color-accent-dim:   rgba(230, 28, 36, 0.06);
+  --color-accent-glow:  rgba(230, 28, 36, 0.12);
 
   /* Semantic */
   --color-success:  #10b981;
@@ -210,12 +210,12 @@ ul, ol {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .nav-links a {
   position: relative;
-  font-size: var(--font-size-sm);
+  font-size: 0.825rem;
   font-weight: 500;
   color: var(--color-text-secondary);
   transition: color var(--transition-fast);
@@ -746,12 +746,12 @@ ul, ol {
 .btn-primary {
   background: var(--color-accent);
   color: #fff;
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(230, 28, 36, 0.3);
 }
 
 .btn-primary:hover {
   background: var(--color-accent-light);
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 30px rgba(230, 28, 36, 0.5);
   transform: translateY(-1px);
 }
 
@@ -934,7 +934,7 @@ ul, ol {
 }
 
 .product-card:hover .product-card-image img {
-  transform: scale(1.05);
+  transform: scale(0.97);
 }
 
 /* Placeholder for missing images */
@@ -1521,7 +1521,7 @@ ul, ol {
 .add-to-cart-btn {
   flex-grow: 1;
   height: 56px;
-  background: linear-gradient(135deg, var(--color-accent), #6d28d9);
+  background: linear-gradient(135deg, var(--color-accent), #990f14);
   color: #fff;
   border: none;
   border-radius: var(--radius-md);
@@ -1533,12 +1533,12 @@ ul, ol {
   justify-content: center;
   gap: var(--space-sm);
   transition: all var(--transition-base);
-  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 14px rgba(230, 28, 36, 0.4);
 }
 
 .add-to-cart-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 6px 20px rgba(230, 28, 36, 0.6);
   background: linear-gradient(135deg, var(--color-accent-light), var(--color-accent));
 }
 

@@ -28,9 +28,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             📦
           </div>
         )}
-        {categoryName && (
-          <span className="product-card-category">{categoryName}</span>
-        )}
       </div>
 
       {/* Body */}
