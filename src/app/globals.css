@@ -869,6 +869,16 @@ ul, ol {
   border-radius: var(--radius-md);
   margin-bottom: var(--space-md);
   transition: transform var(--transition-base), background var(--transition-base);
+  overflow: hidden;
+  padding: var(--space-xs);
+}
+
+.category-icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform var(--transition-base);
 }
 
 .category-card:hover .category-icon {
@@ -1284,8 +1294,12 @@ ul, ol {
   }
 
   .categories-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
+  }
+
+  .category-card {
+    padding: var(--space-lg) var(--space-sm);
   }
 
   .hero {
