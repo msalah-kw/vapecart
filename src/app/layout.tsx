@@ -36,7 +36,7 @@ export default function RootLayout({
                 <div className="footer-brand">
                   <Link href="/" className="footer-logo">
                     <img 
-                      src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" 
+                      src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
                       alt="سحبة فيب" 
                     />
                   </Link>
@@ -46,17 +46,17 @@ export default function RootLayout({
                   <div className="footer-links-col">
                     <h3>معلومات إضافية</h3>
                     <ul>
-                      <li><a href="https://sahbavape.com/about-us/" target="_blank" rel="noopener noreferrer">من نحن</a></li>
-                      <li><a href="https://sahbavape.com/faq/" target="_blank" rel="noopener noreferrer">الأسئلة المتكررة</a></li>
-                      <li><a href="https://sahbavape.com/disclaimer/" target="_blank" rel="noopener noreferrer">إخلاء المسؤولية</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/about-us/" target="_blank" rel="noopener noreferrer">من نحن</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/faq/" target="_blank" rel="noopener noreferrer">الأسئلة المتكررة</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/disclaimer/" target="_blank" rel="noopener noreferrer">إخلاء المسؤولية</a></li>
                     </ul>
                   </div>
                   <div className="footer-links-col">
                     <h3>السياسات والقوانين</h3>
                     <ul>
-                      <li><a href="https://sahbavape.com/privacy-policy/" target="_blank" rel="noopener noreferrer">سياسة الخصوصية</a></li>
-                      <li><a href="https://sahbavape.com/refund_returns/" target="_blank" rel="noopener noreferrer">سياسة الاستبدال والاسترجاع</a></li>
-                      <li><a href="https://sahbavape.com/terms-conditions/" target="_blank" rel="noopener noreferrer">الشروط والأحكام</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/privacy-policy/" target="_blank" rel="noopener noreferrer">سياسة الخصوصية</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/refund_returns/" target="_blank" rel="noopener noreferrer">سياسة الاستبدال والاسترجاع</a></li>
+                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/terms-conditions/" target="_blank" rel="noopener noreferrer">الشروط والأحكام</a></li>
                     </ul>
                   </div>
                 </div>

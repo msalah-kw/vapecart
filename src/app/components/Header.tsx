@@ -58,7 +58,7 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="site-logo">
-            <img src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -143,7 +143,7 @@ export default function Header() {
       <aside className={`mobile-drawer ${isDrawerOpen ? "open" : ""}`}>
         <div className="drawer-header">
           <Link href="/" className="site-logo" onClick={toggleDrawer}>
-            <img src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
           <button className="drawer-close" onClick={toggleDrawer} aria-label="إغلاق القائمة">
             ✕

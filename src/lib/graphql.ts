@@ -1,4 +1,4 @@
-const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://sahbavape.com/graphql";
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
 
 /**
  * Core GraphQL fetch utility
