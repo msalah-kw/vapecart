@@ -1,5 +1,6 @@
 # GraphQL Data Fetching Strategy
-- **Endpoint:** `https://[your-wp-domain]/graphql`
+
+- **Endpoint:** `https://lightgrey-flamingo-522119.hostingersite.com/graphql`
 - **Method:** Use native `fetch` API inside Next.js Server Components.
 - **Queries Required:**
   1. Fetch all products (to generate static paths).

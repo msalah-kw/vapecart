@@ -171,8 +171,8 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
 /* ─────────────── Category Queries ─────────────── */
 
 export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
-  query GetProductsByCategory($categorySlug: String!, $first: Int = 100) {
-    products(where: { category: $categorySlug }, first: $first) {
+  query GetProductsByCategory($categorySlugId: ID!, $categorySlugStr: String!, $first: Int = 100) {
+    products(where: { category: $categorySlugStr }, first: $first) {
       nodes {
         id
         slug
@@ -199,7 +199,7 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
         }
       }
     }
-    productCategory(id: $categorySlug, idType: SLUG) {
+    productCategory(id: $categorySlugId, idType: SLUG) {
       name
       description
       count
