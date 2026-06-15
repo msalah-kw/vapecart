@@ -58,16 +58,13 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="site-logo">
-            Vape<span>Cart</span>
+            <img src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
 
           {/* Desktop Navigation Links */}
           <nav className="nav-links desktop-only">
             <Link href="/" className={pathname === "/" ? "active-link" : ""}>
               الرئيسية
-            </Link>
-            <Link href="/shop" className={pathname === "/shop" ? "active-link" : ""}>
-              المتجر
             </Link>
 
             {CATEGORIES_CONFIG.map((cat) => {
@@ -146,7 +143,7 @@ export default function Header() {
       <aside className={`mobile-drawer ${isDrawerOpen ? "open" : ""}`}>
         <div className="drawer-header">
           <Link href="/" className="site-logo" onClick={toggleDrawer}>
-            Vape<span>Cart</span>
+            <img src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
           <button className="drawer-close" onClick={toggleDrawer} aria-label="إغلاق القائمة">
             ✕
@@ -157,10 +154,6 @@ export default function Header() {
           <Link href="/" className={`drawer-nav-item ${pathname === "/" ? "active" : ""}`}>
             <span className="item-icon">🏠</span>
             الرئيسية
-          </Link>
-          <Link href="/shop" className={`drawer-nav-item ${pathname === "/shop" ? "active" : ""}`}>
-            <span className="item-icon">🛍️</span>
-            المتجر
           </Link>
 
           <div className="drawer-divider">الأقسام</div>

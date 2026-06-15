@@ -10,18 +10,36 @@ import ProductCard from "@/app/components/ProductCard";
 
 /* ─── Homepage Categories Config ─── */
 const HOMEPAGE_CATEGORIES = [
-  { name: "فيب", slug: "vape", icon: "💨" },
-  { name: "سحبة زقارة", slug: "pod-system", icon: "🔌" },
-  { name: "سحبات جاهزة", slug: "disposable", icon: "🔋" },
-  { name: "نكهات فيب", slug: "freebase-eliquids", icon: "🧪" },
-  { name: "نكهات سولت", slug: "saltnic-flavors", icon: "🧂" },
-  { name: "بودات جاهزة", slug: "closed-pods", icon: "📦" },
-  { name: "بودات تعبئة", slug: "refillable-pods", icon: "🔄" },
-  { name: "كويلات", slug: "coils", icon: "⚡" },
-  { name: "ايقوص", slug: "iqos", icon: "🚬" },
-  { name: "اكياس نيكوتين", slug: "nicotine-pouches", icon: "📦" },
-  { name: "زقاير وتبغ", slug: "tobacco", icon: "🍂" },
-  { name: "شيشة ومعسل", slug: "hookah", icon: "🫧" },
+  {
+    name: "اجهزة فيب",
+    slug: "vape",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/اجهزة-فيب.webp",
+  },
+  {
+    name: "سحبات زقارة",
+    slug: "pod-system",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/زقارة.webp",
+  },
+  {
+    name: "سحبات جاهزة",
+    slug: "disposable",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/سحبات-جاهزة.webp",
+  },
+  {
+    name: "نكهات شيشة",
+    slug: "freebase-eliquids",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/نكهات-شيشة.webp",
+  },
+  {
+    name: "نكهات زقارة",
+    slug: "saltnic-flavors",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/سولت.webp",
+  },
+  {
+    name: "ايقوص",
+    slug: "iqos",
+    image: "https://sahbavape.com/wp-content/uploads/2026/06/ايقوص.webp",
+  },
 ];
 
 export default async function HomePage() {
@@ -37,25 +55,16 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ═══ Hero Section ═══ */}
-      <section className="hero" id="hero">
+      {/* ═══ Hero Banner Section ═══ */}
+      <section className="hero-banner" id="hero-banner">
         <div className="container">
-          <div className="hero-content">
-            <span className="hero-badge">متجر الكويت الأول للفيب</span>
-            <h1>تسوّق أفضل السحبات والنكهات</h1>
-            <p>
-              تشكيلة واسعة من سحبات جاهزة، بودات، ونكهات فيب وسولت بأسعار
-              منافسة. توصيل سريع لجميع مناطق الكويت.
-            </p>
-            <div className="hero-actions">
-              <Link href="/shop" className="btn btn-primary">
-                تصفح المتجر
-              </Link>
-              <Link href="/category/disposable" className="btn btn-outline">
-                سحبات جاهزة
-              </Link>
-            </div>
-          </div>
+          <Link href="/shop" className="banner-link">
+            <img 
+              src="https://sahbavape.com/wp-content/uploads/2026/06/بانر.webp" 
+              alt="سحبة فيب - تسوق أفضل السحبات والنكهات في الكويت" 
+              className="banner-image"
+            />
+          </Link>
         </div>
       </section>
  
@@ -80,7 +89,13 @@ export default async function HomePage() {
                   className="category-card"
                   id={`category-${cat.slug}`}
                 >
-                  <div className="category-icon">{cat.icon}</div>
+                  <div className="category-icon">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="category-icon-image"
+                    />
+                  </div>
                   <h3>{cat.name}</h3>
                   <span className="category-count">
                     {count} منتج

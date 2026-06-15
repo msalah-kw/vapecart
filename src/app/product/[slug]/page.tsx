@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
     if (!product) {
       return {
-        title: "المنتج غير موجود | VapeCart",
+        title: "المنتج غير موجود | سحبة فيب",
         description: "عذراً، هذا المنتج غير متوفر حالياً.",
       };
     }
@@ -46,10 +46,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
 
     return {
-      title: `${cleanTitle} | VapeCart`,
+      title: `${cleanTitle} | سحبة فيب`,
       description: cleanDesc,
       openGraph: {
-        title: `${cleanTitle} | VapeCart`,
+        title: `${cleanTitle} | سحبة فيب`,
         description: cleanDesc,
         images: product.image?.sourceUrl ? [{ url: product.image.sourceUrl }] : [],
       },
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   } catch (error) {
     console.error("Error generating metadata for product page:", error);
     return {
-      title: "تفاصيل المنتج | VapeCart",
+      title: "تفاصيل المنتج | سحبة فيب",
       description: "عرض تفاصيل المنتج ومواصفاته.",
     };
   }
