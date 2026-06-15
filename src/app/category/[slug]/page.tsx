@@ -37,7 +37,8 @@ export async function generateMetadata({
 
   try {
     const { data } = await fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
-      categorySlug: decodedSlug,
+      categorySlugId: decodedSlug,
+      categorySlugStr: decodedSlug,
       first: 1,
     });
 
@@ -77,10 +78,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   let categoryDescription = "";
   let productCount = 0;
   let isFound = false;
+  let hasError = false;
 
   try {
     const { data } = await fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
-      categorySlug: decodedSlug,
+      categorySlugId: decodedSlug,
+      categorySlugStr: decodedSlug,
       first: 100,
     });
 
@@ -95,9 +98,20 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     }
   } catch (error) {
     console.error("Error fetching category products:", error);
+    hasError = true;
   }
 
   if (!isFound) {
+    if (hasError) {
+      return (
+        <div className="container">
+          <div className="empty-state" style={{ margin: "4rem auto", textAlign: "center" }}>
+            <div className="empty-state-icon" style={{ fontSize: "3rem" }}>⚠️</div>
+            <p>حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة مرة أخرى لاحقاً.</p>
+          </div>
+        </div>
+      );
+    }
     notFound();
   }
 

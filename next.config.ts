@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "sahbavape.com",
+        hostname: "lightgrey-flamingo-522119.hostingersite.com",
         pathname: "/wp-content/uploads/**",
       },
     ],
