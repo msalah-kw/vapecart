@@ -37,13 +37,20 @@ interface AddToCartFormProps {
   variations: VariationNode[] | null;
 }
 
+// Helper to safely URL-decode values (avoiding URIError)
+function safeDecode(str: string): string {
+  if (!str) return "";
+  try {
+    return decodeURIComponent(str);
+  } catch (e) {
+    return str;
+  }
+}
+
 // Helper to clean up WordPress slug corruption on attributes (e.g., cf%89-0-8 or cf-0-8 -> 0.8)
 function cleanAttributeLabel(val: string): string {
   if (!val) return "";
-  let decoded = val;
-  try {
-    decoded = decodeURIComponent(val);
-  } catch (e) {}
+  let decoded = safeDecode(val);
   
   let clean = decoded
     .replace(/cf%89-/gi, "")
@@ -90,7 +97,7 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
       const varAttrs = variation.attributes?.nodes || [];
       return varAttrs.every(attr => {
         const selectedVal = selectedAttributes[attr.name];
-        return selectedVal === attr.value;
+        return safeDecode(selectedVal) === safeDecode(attr.value);
       });
     }) || null;
   };
@@ -140,7 +147,7 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
                   {attr.options.map((option) => {
                     const isActive = selectedOption === option;
                     const matchedTerm = attr.terms?.nodes?.find(
-                      (t) => t.slug === option
+                      (t) => safeDecode(t.slug) === safeDecode(option)
                     );
                     const displayName = matchedTerm ? matchedTerm.name : cleanAttributeLabel(option);
 

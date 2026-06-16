@@ -2,7 +2,7 @@ const https = require('https');
 
 const query = `
 query GetVariableProducts {
-  products(first: 10, where: { search: "50000" }) {
+  products(first: 10, where: { search: "smok" }) {
     nodes {
       slug
       __typename
