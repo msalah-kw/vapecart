@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { WooProduct, cleanPrice, fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY } from "@/lib/graphql";
@@ -40,6 +41,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const [modalAdding, setModalAdding] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+
+  // Portal mounted state
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const price = cleanPrice(product.price);
   const categoryName = product.productCategories?.nodes?.[0]?.name;
@@ -214,10 +221,24 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* ─── QUICK ADD VARIATIONS MODAL ─── */}
-      {showModal && (
-        <div className="product-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="product-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="product-modal-close" onClick={() => setShowModal(false)} aria-label="إغلاق">
+      {showModal && mounted && createPortal(
+        <div className="product-modal-overlay" onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowModal(false);
+        }}>
+          <div className="product-modal-content" onClick={(e) => {
+            e.stopPropagation();
+          }}>
+            <button
+              className="product-modal-close"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowModal(false);
+              }}
+              aria-label="إغلاق"
+            >
               ✕
             </button>
             
@@ -230,7 +251,17 @@ export default function ProductCard({ product }: ProductCardProps) {
               ) : modalError ? (
                 <div className="product-modal-error">
                   <p>{modalError}</p>
-                  <button onClick={() => setShowModal(false)} className="btn btn-outline" style={{ marginTop: "1rem" }}>إغلاق</button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowModal(false);
+                    }}
+                    className="btn btn-outline"
+                    style={{ marginTop: "1rem" }}
+                  >
+                    إغلاق
+                  </button>
                 </div>
               ) : fullProduct ? (
                 <div className="product-modal-product-details">
@@ -272,7 +303,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                                     key={option}
                                     type="button"
                                     className={`product-attribute-option ${isActive ? "active" : ""}`}
-                                    onClick={() => handleSelectAttribute(attr.name, option)}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleSelectAttribute(attr.name, option);
+                                    }}
                                   >
                                     {option}
                                   </button>
@@ -291,7 +326,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                       <button
                         type="button"
                         className="quantity-btn decrement"
-                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuantity(prev => Math.max(1, prev - 1));
+                        }}
                         disabled={modalAdding}
                       >
                         −
@@ -301,6 +340,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                         className="quantity-val"
                         value={quantity}
                         onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
                         min="1"
                         disabled={modalAdding}
                         aria-label="الكمية"
@@ -308,7 +350,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                       <button
                         type="button"
                         className="quantity-btn increment"
-                        onClick={() => setQuantity(prev => prev + 1)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuantity(prev => prev + 1);
+                        }}
                         disabled={modalAdding}
                       >
                         +
@@ -318,7 +364,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <button
                       type="button"
                       className={`add-to-cart-btn btn btn-primary ${!canAddToCart ? "disabled-state" : ""}`}
-                      onClick={handleModalAdd}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleModalAdd();
+                      }}
                       disabled={!canAddToCart || modalAdding}
                     >
                       {modalAdding ? "جاري الإضافة..." : !matchingVariation ? "اختر الخيارات للمتابعة" : "أضف إلى السلة"}
@@ -328,7 +378,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               ) : null}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -173,7 +173,6 @@ export default function Header() {
 
         <nav className="drawer-nav">
           <Link href="/" className={`drawer-nav-item ${pathname === "/" ? "active" : ""}`}>
-            <span className="item-icon">🏠</span>
             الرئيسية
           </Link>
 
@@ -190,7 +189,6 @@ export default function Header() {
                 <div key={cat.slug} className={`drawer-accordion ${isExpanded ? "expanded" : ""}`}>
                   <div className={`drawer-accordion-header ${isActive ? "active" : ""}`}>
                     <Link href={cat.url} className="drawer-accordion-link">
-                      <span className="item-icon">{cat.icon}</span>
                       {cat.name}
                     </Link>
                     <button 
@@ -222,7 +220,6 @@ export default function Header() {
                 href={cat.url}
                 className={`drawer-nav-item ${pathname === cat.url ? "active" : ""}`}
               >
-                <span className="item-icon">{cat.icon}</span>
                 {cat.name}
               </Link>
             );
@@ -237,7 +234,6 @@ export default function Header() {
             className={`drawer-nav-item drawer-cart-button ${pathname === "/cart" ? "active" : ""}`}
             style={{ width: "100%", background: "none", border: "none", textAlign: "right", cursor: "pointer" }}
           >
-            <span className="item-icon">🛒</span>
             سلة التسوق
           </button>
         </nav>
