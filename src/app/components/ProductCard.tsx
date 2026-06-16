@@ -298,6 +298,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                             <div className="product-attribute-options">
                               {attr.options.map((option) => {
                                 const isActive = selectedOption === option;
+                                const matchedTerm = attr.terms?.nodes?.find(
+                                  (t) => t.slug === option
+                                );
+                                const displayName = matchedTerm ? matchedTerm.name : option;
+
                                 return (
                                   <button
                                     key={option}
@@ -309,7 +314,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                                       handleSelectAttribute(attr.name, option);
                                     }}
                                   >
-                                    {option}
+                                    {displayName}
                                   </button>
                                 );
                               })}

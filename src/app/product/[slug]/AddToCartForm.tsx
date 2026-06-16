@@ -9,6 +9,12 @@ interface AttributeNode {
   options: string[];
   variation: boolean;
   visible: boolean;
+  terms?: {
+    nodes: {
+      name: string;
+      slug: string;
+    }[];
+  } | null;
 }
 
 interface VariationNode {
@@ -113,6 +119,11 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
                 <div className="product-attribute-options">
                   {attr.options.map((option) => {
                     const isActive = selectedOption === option;
+                    const matchedTerm = attr.terms?.nodes?.find(
+                      (t) => t.slug === option
+                    );
+                    const displayName = matchedTerm ? matchedTerm.name : option;
+
                     return (
                       <button
                         key={option}
@@ -120,7 +131,7 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
                         className={`product-attribute-option ${isActive ? "active" : ""}`}
                         onClick={() => handleSelectAttribute(attr.name, option)}
                       >
-                        {option}
+                        {displayName}
                       </button>
                     );
                   })}

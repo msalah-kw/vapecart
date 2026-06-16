@@ -140,6 +140,14 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
             options
             variation
             visible
+            ... on GlobalProductAttribute {
+              terms {
+                nodes {
+                  name
+                  slug
+                }
+              }
+            }
           }
         }
       }
@@ -260,6 +268,12 @@ export interface WooProduct {
       options: string[];
       variation: boolean;
       visible: boolean;
+      terms?: {
+        nodes: {
+          name: string;
+          slug: string;
+        }[];
+      } | null;
     }[];
   } | null;
   variations?: {
