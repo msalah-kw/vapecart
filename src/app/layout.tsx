@@ -51,9 +51,9 @@ export default function RootLayout({
                 <div className="footer-col">
                   <h3>معلومات إضافية</h3>
                   <ul>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/about-us/" target="_blank" rel="noopener noreferrer">من نحن</a></li>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/faq/" target="_blank" rel="noopener noreferrer">الأسئلة المتكررة</a></li>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/disclaimer/" target="_blank" rel="noopener noreferrer">إخلاء المسؤولية</a></li>
+                    <li><Link href="/about-us">من نحن</Link></li>
+                    <li><Link href="/faq">الأسئلة المتكررة</Link></li>
+                    <li><Link href="/disclaimer">إخلاء المسؤولية</Link></li>
                   </ul>
                 </div>
 
@@ -61,9 +61,9 @@ export default function RootLayout({
                 <div className="footer-col">
                   <h3>السياسات والقوانين</h3>
                   <ul>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/privacy-policy/" target="_blank" rel="noopener noreferrer">سياسة الخصوصية</a></li>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/refund_returns/" target="_blank" rel="noopener noreferrer">سياسة الاستبدال والاسترجاع</a></li>
-                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/terms-conditions/" target="_blank" rel="noopener noreferrer">الشروط والأحكام</a></li>
+                    <li><Link href="/privacy-policy">سياسة الخصوصية</Link></li>
+                    <li><Link href="/refund_returns">سياسة الاستبدال والاسترجاع</Link></li>
+                    <li><Link href="/terms-conditions">الشروط والأحكام</Link></li>
                   </ul>
                 </div>
 
