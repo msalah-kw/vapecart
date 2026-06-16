@@ -37,6 +37,26 @@ interface AddToCartFormProps {
   variations: VariationNode[] | null;
 }
 
+// Helper to clean up WordPress slug corruption on attributes (e.g., cf%89-0-8 or cf-0-8 -> 0.8)
+function cleanAttributeLabel(val: string): string {
+  if (!val) return "";
+  let decoded = val;
+  try {
+    decoded = decodeURIComponent(val);
+  } catch (e) {}
+  
+  let clean = decoded
+    .replace(/cf%89-/gi, "")
+    .replace(/cf\u0089-/gi, "")
+    .replace(/cf\x89-/gi, "")
+    .replace(/cf-/gi, "")
+    .replace(/omega-/gi, "")
+    .replace(/ohm-/gi, "");
+    
+  clean = clean.replace(/(\d+)-(\d+)/g, "$1.$2");
+  return clean;
+}
+
 export default function AddToCartForm({ productId, attributes, variations }: AddToCartFormProps) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -122,7 +142,7 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
                     const matchedTerm = attr.terms?.nodes?.find(
                       (t) => t.slug === option
                     );
-                    const displayName = matchedTerm ? matchedTerm.name : option;
+                    const displayName = matchedTerm ? matchedTerm.name : cleanAttributeLabel(option);
 
                     return (
                       <button

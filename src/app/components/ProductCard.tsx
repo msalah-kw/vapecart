@@ -27,6 +27,26 @@ function sanitizeTerminology(text: string): string {
     .replace(/بنك طاقة/gi, "باور بانك");
 }
 
+// Helper to clean up WordPress slug corruption on attributes (e.g., cf%89-0-8 or cf-0-8 -> 0.8)
+function cleanAttributeLabel(val: string): string {
+  if (!val) return "";
+  let decoded = val;
+  try {
+    decoded = decodeURIComponent(val);
+  } catch (e) {}
+  
+  let clean = decoded
+    .replace(/cf%89-/gi, "")
+    .replace(/cf\u0089-/gi, "")
+    .replace(/cf\x89-/gi, "")
+    .replace(/cf-/gi, "")
+    .replace(/omega-/gi, "")
+    .replace(/ohm-/gi, "");
+    
+  clean = clean.replace(/(\d+)-(\d+)/g, "$1.$2");
+  return clean;
+}
+
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   
@@ -301,7 +321,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 const matchedTerm = attr.terms?.nodes?.find(
                                   (t) => t.slug === option
                                 );
-                                const displayName = matchedTerm ? matchedTerm.name : option;
+                                const displayName = matchedTerm ? matchedTerm.name : cleanAttributeLabel(option);
 
                                 return (
                                   <button
