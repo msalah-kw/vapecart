@@ -36,7 +36,8 @@ export default function RootLayout({
             {/* ─── Footer ─── */}
             <footer className="site-footer">
               <div className="container footer-container">
-                <div className="footer-brand">
+                {/* Column 1: Brand Info */}
+                <div className="footer-col footer-brand-col">
                   <Link href="/" className="footer-logo">
                     <img 
                       src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png" 
@@ -45,23 +46,39 @@ export default function RootLayout({
                   </Link>
                   <p className="footer-desc">متجر سحبة فيب الأول لجميع سحبات وبودات ونكهات الفيب في الكويت.</p>
                 </div>
-                <div className="footer-links-grid">
-                  <div className="footer-links-col">
-                    <h3>معلومات إضافية</h3>
-                    <ul>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/about-us/" target="_blank" rel="noopener noreferrer">من نحن</a></li>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/faq/" target="_blank" rel="noopener noreferrer">الأسئلة المتكررة</a></li>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/disclaimer/" target="_blank" rel="noopener noreferrer">إخلاء المسؤولية</a></li>
-                    </ul>
-                  </div>
-                  <div className="footer-links-col">
-                    <h3>السياسات والقوانين</h3>
-                    <ul>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/privacy-policy/" target="_blank" rel="noopener noreferrer">سياسة الخصوصية</a></li>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/refund_returns/" target="_blank" rel="noopener noreferrer">سياسة الاستبدال والاسترجاع</a></li>
-                      <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/terms-conditions/" target="_blank" rel="noopener noreferrer">الشروط والأحكام</a></li>
-                    </ul>
-                  </div>
+
+                {/* Column 2: Additional Info */}
+                <div className="footer-col">
+                  <h3>معلومات إضافية</h3>
+                  <ul>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/about-us/" target="_blank" rel="noopener noreferrer">من نحن</a></li>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/faq/" target="_blank" rel="noopener noreferrer">الأسئلة المتكررة</a></li>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/disclaimer/" target="_blank" rel="noopener noreferrer">إخلاء المسؤولية</a></li>
+                  </ul>
+                </div>
+
+                {/* Column 3: Policies */}
+                <div className="footer-col">
+                  <h3>السياسات والقوانين</h3>
+                  <ul>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/privacy-policy/" target="_blank" rel="noopener noreferrer">سياسة الخصوصية</a></li>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/refund_returns/" target="_blank" rel="noopener noreferrer">سياسة الاستبدال والاسترجاع</a></li>
+                    <li><a href="https://lightgrey-flamingo-522119.hostingersite.com/terms-conditions/" target="_blank" rel="noopener noreferrer">الشروط والأحكام</a></li>
+                  </ul>
+                </div>
+
+                {/* Column 4: Contact/Support */}
+                <div className="footer-col">
+                  <h3>تواصل معنا</h3>
+                  <ul>
+                    <li>أوقات العمل: طوال أيام الأسبوع</li>
+                    <li>ساعات الخدمة: 24 ساعة خدمة سريعة</li>
+                    <li>
+                      <a href="https://wa.me/96555727313" target="_blank" rel="noopener noreferrer" className="footer-whatsapp-link">
+                        💬 دعم واتساب: 96555727313+
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div className="footer-bottom">
