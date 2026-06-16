@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "سحبة فيب – متجر فيب إلكتروني | الكويت",
   description:
     "أفضل متجر فيب إلكتروني في الكويت. سحبات جاهزة، بودات، نكهات سولت ونكهات فيب بأسعار منافسة وتوصيل سريع.",
+  icons: {
+    icon: "https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -36,7 +39,7 @@ export default function RootLayout({
                 <div className="footer-brand">
                   <Link href="/" className="footer-logo">
                     <img 
-                      src="https://sahbavape.com/wp-content/uploads/2026/02/sahbavape.webp" 
+                      src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png" 
                       alt="سحبة فيب" 
                     />
                   </Link>

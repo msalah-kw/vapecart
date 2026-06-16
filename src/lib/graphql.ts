@@ -54,6 +54,7 @@ export const GET_ALL_PRODUCTS_QUERY = `
           sourceUrl
           altText
         }
+        __typename
         ... on SimpleProduct {
           price
           regularPrice
@@ -86,6 +87,7 @@ export const GET_LATEST_PRODUCTS_QUERY = `
           sourceUrl
           altText
         }
+        __typename
         ... on SimpleProduct {
           price
           regularPrice
@@ -183,6 +185,7 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
           sourceUrl
           altText
         }
+        __typename
         ... on SimpleProduct {
           price
           regularPrice
@@ -233,6 +236,7 @@ export const GET_CATEGORIES_QUERY = `
 /* ─────────────── Type Definitions ─────────────── */
 
 export interface WooProduct {
+  __typename?: "SimpleProduct" | "VariableProduct";
   id: string;
   slug: string;
   databaseId: number;
