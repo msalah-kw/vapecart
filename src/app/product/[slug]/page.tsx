@@ -52,13 +52,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title,
       description,
       openGraph: {
-        title: seo?.opengraphTitle || title,
-        description: seo?.opengraphDescription || description,
-        images: seo?.opengraphImage?.sourceUrl
-          ? [{ url: seo.opengraphImage.sourceUrl }]
-          : product.image?.sourceUrl
-          ? [{ url: product.image.sourceUrl }]
-          : [],
+        title,
+        description,
+        images: product.image?.sourceUrl ? [{ url: product.image.sourceUrl }] : [],
       },
     };
   } catch (error) {

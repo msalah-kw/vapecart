@@ -134,11 +134,6 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       seo {
         title
         metaDesc
-        opengraphTitle
-        opengraphDescription
-        opengraphImage {
-          sourceUrl
-        }
       }
       image {
         sourceUrl
@@ -242,11 +237,6 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
       seo {
         title
         metaDesc
-        opengraphTitle
-        opengraphDescription
-        opengraphImage {
-          sourceUrl
-        }
       }
     }
   }
@@ -280,11 +270,6 @@ export const GET_CATEGORIES_QUERY = `
 export interface SeoMetadata {
   title?: string | null;
   metaDesc?: string | null;
-  opengraphTitle?: string | null;
-  opengraphDescription?: string | null;
-  opengraphImage?: {
-    sourceUrl: string | null;
-  } | null;
 }
 
 export interface WooProduct {

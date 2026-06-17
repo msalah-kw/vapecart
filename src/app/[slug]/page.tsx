@@ -15,11 +15,6 @@ const GET_PAGE_BY_SLUG_QUERY = `
       seo {
         title
         metaDesc
-        opengraphTitle
-        opengraphDescription
-        opengraphImage {
-          sourceUrl
-        }
       }
     }
   }
@@ -70,11 +65,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       openGraph: {
-        title: seo?.opengraphTitle || title,
-        description: seo?.opengraphDescription || description,
-        images: seo?.opengraphImage?.sourceUrl
-          ? [{ url: seo.opengraphImage.sourceUrl }]
-          : [],
+        title,
+        description,
+        images: [],
       },
     };
   } catch (error) {

@@ -64,11 +64,9 @@ export async function generateMetadata({
       title,
       description,
       openGraph: {
-        title: seo?.opengraphTitle || title,
-        description: seo?.opengraphDescription || description,
-        images: seo?.opengraphImage?.sourceUrl
-          ? [{ url: seo.opengraphImage.sourceUrl }]
-          : [],
+        title,
+        description,
+        images: [],
       },
     };
   } catch (error) {
