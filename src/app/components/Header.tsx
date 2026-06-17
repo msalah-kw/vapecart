@@ -7,6 +7,43 @@ import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG, CategoryNode } from "@/lib/navigation";
 import { useCart } from "@/context/CartContext";
 
+// Helper to safely URL-decode values (avoiding URIError)
+function safeDecode(str: string): string {
+  if (!str) return "";
+  try {
+    return decodeURIComponent(str);
+  } catch (e) {
+    return str;
+  }
+}
+
+// Helper to clean up WordPress slug corruption on attributes (e.g., cf%89-0-8 or cf-0-8 -> 0.8)
+function cleanAttributeLabel(val: string): string {
+  if (!val) return "";
+  let decoded = safeDecode(val);
+  
+  let clean = decoded
+    .replace(/cf%89-/gi, "")
+    .replace(/cf\u0089-/gi, "")
+    .replace(/cf\x89-/gi, "")
+    .replace(/cf-/gi, "")
+    .replace(/omega-/gi, "")
+    .replace(/ohm-/gi, "");
+    
+  clean = clean.replace(/(\d+)-(\d+)/g, "$1.$2");
+  
+  // Replace hyphens and underscores with space to make slugs human-readable (e.g. blueberry-gum -> blueberry gum)
+  clean = clean.replace(/[-_]/g, " ");
+  
+  return clean;
+}
+
+// Helper to clean WooCommerce prices (removing HTML entities like &nbsp;)
+function cleanPriceString(priceStr: string | null | undefined): string {
+  if (!priceStr) return "";
+  return priceStr.replace(/&nbsp;/g, " ").replace(/<[^>]*>/g, "").trim();
+}
+
 export default function Header() {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -309,8 +346,8 @@ export default function Header() {
                       {isVariable && attributes.length > 0 && (
                         <div className="minicart-item-meta" style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "2px" }}>
                           {attributes.map((attr) => (
-                            <span key={attr.name} className="minicart-meta-pill" style={{ fontSize: "10px", background: "var(--color-surface)", color: "var(--color-text-secondary)", padding: "2px 6px", borderRadius: "var(--radius-sm)" }}>
-                              {attr.label || attr.name.replace("pa_", "")}: {attr.value}
+                            <span key={attr.name} className="minicart-meta-pill">
+                              {attr.label || attr.name.replace("pa_", "")}: {cleanAttributeLabel(attr.value)}
                             </span>
                           ))}
                         </div>
@@ -337,7 +374,7 @@ export default function Header() {
                         </div>
                         
                         <span className="minicart-item-price" style={{ fontSize: "var(--font-size-sm)", fontWeight: "700", color: "var(--color-price)" }}>
-                          {item.total}
+                          {cleanPriceString(item.total)}
                         </span>
                       </div>
                     </div>
@@ -361,7 +398,7 @@ export default function Header() {
           <div className="minicart-footer" style={{ padding: "var(--space-lg)", borderTop: "1px solid var(--color-border)", background: "var(--color-bg-card)", display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
             <div className="minicart-subtotal" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "var(--font-size-base)" }}>
               <span>المجموع الفرعي:</span>
-              <strong style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--color-price)" }}>{cart.subtotal}</strong>
+              <strong style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--color-price)" }}>{cleanPriceString(cart.subtotal)}</strong>
             </div>
             
             <div className="minicart-actions" style={{ display: "flex", gap: "var(--space-sm)" }}>

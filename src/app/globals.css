@@ -519,6 +519,15 @@ button.header-cart-button:hover {
   justify-content: center;
 }
 
+.minicart-meta-pill {
+  font-size: 10px;
+  background: var(--color-surface);
+  color: #1e293b; /* Premium slate/charcoal for high contrast readability */
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
 .drawer-header {
   height: var(--header-height);
   padding: 0 var(--space-lg);
