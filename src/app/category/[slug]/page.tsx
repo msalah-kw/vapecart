@@ -56,9 +56,8 @@ export async function generateMetadata({
       ? sanitizeTerminology(category.description)
       : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
-    const seo = category.seo;
-    const title = seo?.title || `${cleanTitle} – سحبة فيب`;
-    const description = seo?.metaDesc || cleanDesc.slice(0, 160);
+    const title = `${cleanTitle} – سحبة فيب`;
+    const description = cleanDesc.slice(0, 160);
 
     return {
       title,
@@ -79,8 +78,11 @@ export async function generateMetadata({
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = await params;
+  const resolvedParams = await params;
+  console.log("[CategoryPage] ➤ Raw params:", JSON.stringify(resolvedParams));
+  const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
+  console.log("[CategoryPage] ➤ Decoded slug:", decodedSlug);
 
   let products: WooProduct[] = [];
   let categoryName = "";
@@ -96,6 +98,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       first: 100,
     }, undefined, { revalidate: 60 });
 
+    console.log("[CategoryPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
+
     if (data?.productCategory) {
       isFound = true;
       categoryName = sanitizeTerminology(data.productCategory.name);
@@ -104,9 +108,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       );
       productCount = data.productCategory.count || 0;
       products = data.products?.nodes ?? [];
+    } else {
+      console.warn("[CategoryPage] ⚠ productCategory is null/undefined for slug:", decodedSlug);
     }
   } catch (error) {
-    console.error("Error fetching category products:", error);
+    console.error("[CategoryPage] ✖ Error fetching category products:", error);
     hasError = true;
   }
 

@@ -12,10 +12,6 @@ const GET_PAGE_BY_SLUG_QUERY = `
     page(id: $id, idType: URI) {
       title
       content
-      seo {
-        title
-        metaDesc
-      }
     }
   }
 `;
@@ -57,9 +53,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const seo = page.seo;
-    const title = seo?.title || `${page.title} | سحبة فيب`;
-    const description = seo?.metaDesc || `عرض صفحة ${page.title} ومحتوياتها.`;
+    const title = `${page.title} | سحبة فيب`;
+    const description = `عرض صفحة ${page.title} ومحتوياتها.`;
 
     return {
       title,
@@ -79,18 +74,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function StaticPage({ params }: PageProps) {
-  const { slug } = await params;
+  const resolvedParams = await params;
+  console.log("[StaticPage] ➤ Raw params:", JSON.stringify(resolvedParams));
+  const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
+  console.log("[StaticPage] ➤ Decoded slug:", decodedSlug);
 
   let page = null;
   try {
     const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
+    console.log("[StaticPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
     page = data?.page;
   } catch (error) {
-    console.error("Error fetching page details:", error);
+    console.error("[StaticPage] ✖ Error fetching page details:", error);
   }
 
   if (!page) {
+    console.warn("[StaticPage] ⚠ page is null/undefined for slug:", decodedSlug, "→ calling notFound()");
     notFound();
   }
 

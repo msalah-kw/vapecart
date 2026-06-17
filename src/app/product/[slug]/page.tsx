@@ -44,9 +44,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const rawDesc = product.shortDescription || product.description || "";
     const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
 
-    const seo = product.seo;
-    const title = seo?.title || `${cleanTitle} | سحبة فيب`;
-    const description = seo?.metaDesc || cleanDesc;
+    const title = `${cleanTitle} | سحبة فيب`;
+    const description = cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
 
     return {
       title,
@@ -67,19 +66,24 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
+  const resolvedParams = await params;
+  console.log("[ProductPage] ➤ Raw params:", JSON.stringify(resolvedParams));
+  const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
+  console.log("[ProductPage] ➤ Decoded slug:", decodedSlug);
 
   let product = null;
 
   try {
     const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
+    console.log("[ProductPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
     product = data?.product;
   } catch (error) {
-    console.error("Error fetching product details:", error);
+    console.error("[ProductPage] ✖ Error fetching product details:", error);
   }
 
   if (!product) {
+    console.warn("[ProductPage] ⚠ product is null/undefined for slug:", decodedSlug, "→ calling notFound()");
     notFound();
   }
 

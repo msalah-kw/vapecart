@@ -37,14 +37,41 @@ export async function fetchGraphQL(
     fetchOptions.cache = "no-store";
   }
 
-  const res = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
+  // ── DIAGNOSTIC: Log outgoing request ──
+  console.log("[fetchGraphQL] ➤ Endpoint:", GRAPHQL_ENDPOINT);
+  console.log("[fetchGraphQL] ➤ Variables:", JSON.stringify(variables));
+  console.log("[fetchGraphQL] ➤ Query (first 120 chars):", query.trim().substring(0, 120));
 
-  const json = await res.json();
+  let res: Response;
+  try {
+    res = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
+  } catch (networkError) {
+    console.error("[fetchGraphQL] ✖ NETWORK ERROR — fetch() threw:", networkError);
+    throw networkError;
+  }
+
+  // ── DIAGNOSTIC: Log HTTP response status ──
+  console.log("[fetchGraphQL] ➤ HTTP Status:", res.status, res.statusText);
+
+  const rawText = await res.text();
+  console.log("[fetchGraphQL] ➤ Raw response body (first 500 chars):", rawText.substring(0, 500));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let json: { data?: Record<string, any>; errors?: any[] };
+  try {
+    json = JSON.parse(rawText);
+  } catch (parseError) {
+    console.error("[fetchGraphQL] ✖ JSON PARSE ERROR — Response is not valid JSON.");
+    console.error("[fetchGraphQL] ✖ Full raw body:", rawText.substring(0, 2000));
+    throw new Error("GraphQL response was not valid JSON");
+  }
 
   if (json.errors) {
-    console.error("GraphQL Errors:", json.errors);
+    console.error("[fetchGraphQL] ✖ GraphQL Errors:", JSON.stringify(json.errors, null, 2));
     throw new Error("Failed to fetch API");
   }
+
+  console.log("[fetchGraphQL] ✔ Success — data keys:", json.data ? Object.keys(json.data) : "null");
 
   return {
     data: json.data,
@@ -131,10 +158,6 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       name
       description
       shortDescription
-      seo {
-        title
-        metaDesc
-      }
       image {
         sourceUrl
         altText
@@ -234,10 +257,6 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
       name
       description
       count
-      seo {
-        title
-        metaDesc
-      }
     }
   }
 `;
@@ -267,11 +286,6 @@ export const GET_CATEGORIES_QUERY = `
 
 /* ─────────────── Type Definitions ─────────────── */
 
-export interface SeoMetadata {
-  title?: string | null;
-  metaDesc?: string | null;
-}
-
 export interface WooProduct {
   __typename?: "SimpleProduct" | "VariableProduct";
   id: string;
@@ -280,7 +294,6 @@ export interface WooProduct {
   name: string;
   description?: string;
   shortDescription: string;
-  seo?: SeoMetadata | null;
   image: {
     sourceUrl: string;
     altText: string;
@@ -337,7 +350,6 @@ export interface WooCategory {
   name: string;
   slug: string;
   count: number;
-  seo?: SeoMetadata | null;
   image: {
     sourceUrl: string;
   } | null;
