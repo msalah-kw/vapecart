@@ -3711,3 +3711,53 @@ button.header-cart-button:hover {
     margin-bottom: var(--space-lg);
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   SKELETON LOADERS
+   ═══════════════════════════════════════════════════════ */
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.skeleton {
+  background-color: #e2e8f0;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-lg);
+}
+
+.skeleton-text {
+  height: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: var(--radius-md);
+}
+
+.product-card.skeleton-active {
+  pointer-events: none;
+}
+
+.product-card.skeleton-active:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border);
+}

@@ -44,6 +44,18 @@ function cleanPriceString(priceStr: string | null | undefined): string {
   return priceStr.replace(/&nbsp;/g, " ").replace(/<[^>]*>/g, "").trim();
 }
 
+function CartItemSkeleton() {
+  return (
+    <div className="minicart-item skeleton-active" style={{ display: "flex", gap: "var(--space-md)", borderBottom: "1px solid var(--color-border)", paddingBottom: "var(--space-md)", position: "relative" }}>
+      <div className="skeleton skeleton-img" style={{ width: "70px", height: "70px", borderRadius: "var(--radius-md)", flexShrink: 0 }} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px", justifyContent: "center" }}>
+        <div className="skeleton skeleton-text" style={{ width: "80%", height: "14px" }} />
+        <div className="skeleton skeleton-text" style={{ width: "40%", height: "12px" }} />
+      </div>
+    </div>
+  );
+}
+
 export default function Header() {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -305,9 +317,10 @@ export default function Header() {
 
         <div className="minicart-body" style={{ flex: 1, overflowY: "auto", padding: "var(--space-md) var(--space-lg)" }}>
           {loading && !cart ? (
-            <div className="minicart-loading" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--color-text-muted)" }}>
-              <span className="spinner"></span>
-              <p>جاري تحميل السلة...</p>
+            <div className="minicart-skeletons" style={{ display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
+              <CartItemSkeleton />
+              <CartItemSkeleton />
+              <CartItemSkeleton />
             </div>
           ) : !cart || cart.contents.nodes.length === 0 ? (
             <div className="minicart-empty" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "var(--space-md)", color: "var(--color-text-muted)" }}>
