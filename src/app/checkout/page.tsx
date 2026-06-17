@@ -228,9 +228,9 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Validate Region
-    if (!selectedRegionId) {
-      setErrorMsg("الرجاء اختيار منطقة التوصيل.");
+    // Validate Region and Fee
+    if (!selectedRegionId || selectedShippingFee <= 0) {
+      setErrorMsg("الرجاء اختيار منطقة توصيل صالحة.");
       return;
     }
 
@@ -259,7 +259,9 @@ export default function CheckoutPage() {
         addressDetail,
         selectedRegion?.name || "",
         sessionToken,
-        cleanEmail
+        cleanEmail,
+        selectedRegion?.name || "",
+        selectedShippingFee
       );
 
       if (res.success && res.order) {

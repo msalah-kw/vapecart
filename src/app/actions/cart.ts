@@ -127,11 +127,13 @@ export async function checkoutAction(
   address1: string,
   city: string,
   sessionToken?: string,
-  email?: string
+  email?: string,
+  shippingArea?: string,
+  shippingFee?: number
 ) {
   try {
     const finalEmail = email || `${phone}@vapecart.local`;
-    const input = {
+    const input: any = {
       clientMutationId: "vapecart-checkout",
       billing: {
         firstName,
@@ -153,6 +155,15 @@ export async function checkoutAction(
       paymentMethod: "cod",
       shipToDifferentAddress: false,
     };
+
+    if (shippingArea && shippingFee !== undefined) {
+      input.metaData = [
+        { key: "shipping_area", value: shippingArea },
+        { key: "shipping_fee", value: String(shippingFee) },
+        { key: "_shipping_fee", value: String(shippingFee) },
+        { key: "_shipping_area", value: shippingArea }
+      ];
+    }
 
     const { data, sessionToken: newSessionToken } = await fetchGraphQL(
       CHECKOUT_MUTATION,

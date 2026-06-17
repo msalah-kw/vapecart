@@ -42,16 +42,23 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
     const cleanTitle = sanitizeTerminology(product.name);
     const rawDesc = product.shortDescription || product.description || "";
-    // Restrict description to ~160 characters
     const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
 
+    const seo = product.seo;
+    const title = seo?.title || `${cleanTitle} | سحبة فيب`;
+    const description = seo?.metaDesc || cleanDesc;
+
     return {
-      title: `${cleanTitle} | سحبة فيب`,
-      description: cleanDesc,
+      title,
+      description,
       openGraph: {
-        title: `${cleanTitle} | سحبة فيب`,
-        description: cleanDesc,
-        images: product.image?.sourceUrl ? [{ url: product.image.sourceUrl }] : [],
+        title: seo?.opengraphTitle || title,
+        description: seo?.opengraphDescription || description,
+        images: seo?.opengraphImage?.sourceUrl
+          ? [{ url: seo.opengraphImage.sourceUrl }]
+          : product.image?.sourceUrl
+          ? [{ url: product.image.sourceUrl }]
+          : [],
       },
     };
   } catch (error) {

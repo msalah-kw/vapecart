@@ -56,9 +56,20 @@ export async function generateMetadata({
       ? sanitizeTerminology(category.description)
       : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
+    const seo = category.seo;
+    const title = seo?.title || `${cleanTitle} – سحبة فيب`;
+    const description = seo?.metaDesc || cleanDesc.slice(0, 160);
+
     return {
-      title: `${cleanTitle} – سحبة فيب`,
-      description: cleanDesc.slice(0, 160),
+      title,
+      description,
+      openGraph: {
+        title: seo?.opengraphTitle || title,
+        description: seo?.opengraphDescription || description,
+        images: seo?.opengraphImage?.sourceUrl
+          ? [{ url: seo.opengraphImage.sourceUrl }]
+          : [],
+      },
     };
   } catch (error) {
     console.error("Error generating metadata for category page:", error);
