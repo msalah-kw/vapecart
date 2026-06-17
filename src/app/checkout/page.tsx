@@ -7,14 +7,114 @@ import { useCart } from "@/context/CartContext";
 import { checkoutAction } from "@/app/actions/cart";
 import { cleanPrice } from "@/lib/graphql";
 
-const REGIONS = [
-  { id: "hawally", name: "حولي", fee: 1.000 },
-  { id: "salmiya", name: "السالمية", fee: 1.000 },
-  { id: "kuwait-city", name: "العاصمة", fee: 1.000 },
-  { id: "farwaniya", name: "الفروانية", fee: 1.500 },
-  { id: "ahmadi", name: "الأحمدي", fee: 1.500 },
-  { id: "mubarak", name: "مبارك الكبير", fee: 1.500 },
-  { id: "jahra", name: "الجهراء", fee: 2.000 },
+const KUWAIT_SHIPPING_ZONES = [
+  { id: "area-1", name: "اشبيلية", fee: 2 },
+  { id: "area-2", name: "الأحمدي", fee: 2 },
+  { id: "area-3", name: "الأندلس", fee: 2 },
+  { id: "area-4", name: "البدع", fee: 2 },
+  { id: "area-5", name: "الجابرية", fee: 2 },
+  { id: "area-6", name: "الجهراء", fee: 2 },
+  { id: "area-7", name: "الحساوي", fee: 2 },
+  { id: "area-8", name: "الخالدية", fee: 2 },
+  { id: "area-9", name: "الدسمة", fee: 2 },
+  { id: "area-10", name: "الدعية", fee: 2 },
+  { id: "area-11", name: "الدوحة", fee: 2 },
+  { id: "area-12", name: "الرابية", fee: 2 },
+  { id: "area-13", name: "الرحاب", fee: 2 },
+  { id: "area-14", name: "الرقة", fee: 2 },
+  { id: "area-15", name: "الرقعي", fee: 2 },
+  { id: "area-16", name: "الرميثية", fee: 2 },
+  { id: "area-17", name: "الروضة", fee: 2 },
+  { id: "area-18", name: "الري", fee: 2 },
+  { id: "area-19", name: "الزهراء", fee: 2 },
+  { id: "area-20", name: "السالمي", fee: 2 },
+  { id: "area-21", name: "السالمية", fee: 1 },
+  { id: "area-22", name: "السرة", fee: 2 },
+  { id: "area-23", name: "السلام", fee: 2 },
+  { id: "area-24", name: "الشامية", fee: 2 },
+  { id: "area-25", name: "الشدادية", fee: 2 },
+  { id: "area-26", name: "الشرق", fee: 2 },
+  { id: "area-27", name: "الشعب", fee: 2 },
+  { id: "area-28", name: "الشعيبة", fee: 2 },
+  { id: "area-29", name: "الشهداء", fee: 2 },
+  { id: "area-30", name: "الشويخ", fee: 2 },
+  { id: "area-31", name: "الصالحية", fee: 2 },
+  { id: "area-32", name: "الصباحية", fee: 2 },
+  { id: "area-33", name: "الصبية", fee: 2 },
+  { id: "area-34", name: "الصديق", fee: 2 },
+  { id: "area-35", name: "الصليبية", fee: 2 },
+  { id: "area-36", name: "الصليبيخات", fee: 2 },
+  { id: "area-37", name: "الضجيج", fee: 2 },
+  { id: "area-38", name: "الظهر", fee: 2 },
+  { id: "area-39", name: "العارضية", fee: 2 },
+  { id: "area-40", name: "العباسية", fee: 2 },
+  { id: "area-41", name: "العبدلي", fee: 6 },
+  { id: "area-42", name: "العدان", fee: 2 },
+  { id: "area-43", name: "العديلية", fee: 2 },
+  { id: "area-44", name: "العقيلة", fee: 2 },
+  { id: "area-45", name: "العمرية", fee: 2 },
+  { id: "area-46", name: "الفحيحيل", fee: 2 },
+  { id: "area-47", name: "الفردوس", fee: 2 },
+  { id: "area-48", name: "الفروانية", fee: 2 },
+  { id: "area-49", name: "الفنطاس", fee: 2 },
+  { id: "area-50", name: "الفنيطيس", fee: 2 },
+  { id: "area-51", name: "الفيحاء", fee: 2 },
+  { id: "area-52", name: "القادسية", fee: 2 },
+  { id: "area-53", name: "القبلة", fee: 2 },
+  { id: "area-54", name: "القرين", fee: 2 },
+  { id: "area-55", name: "القصور", fee: 2 },
+  { id: "area-56", name: "القيروان", fee: 2 },
+  { id: "area-57", name: "الكويت", fee: 2 },
+  { id: "area-58", name: "المرقاب", fee: 2 },
+  { id: "area-59", name: "المسايل", fee: 2 },
+  { id: "area-60", name: "المسيلة", fee: 2 },
+  { id: "area-61", name: "المطلاع", fee: 6 },
+  { id: "area-62", name: "المنصورية", fee: 2 },
+  { id: "area-63", name: "المنقف", fee: 2 },
+  { id: "area-64", name: "المهبولة", fee: 2 },
+  { id: "area-65", name: "النزهة", fee: 2 },
+  { id: "area-66", name: "النهضة", fee: 2 },
+  { id: "area-67", name: "النويصيب", fee: 6 },
+  { id: "area-68", name: "الوفرة", fee: 2 },
+  { id: "area-69", name: "اليرموك", fee: 2 },
+  { id: "area-70", name: "أبو الحصاني", fee: 2 },
+  { id: "area-71", name: "أبو حليفة", fee: 2 },
+  { id: "area-72", name: "أبو فطيرة", fee: 2 },
+  { id: "area-73", name: "أمغرة", fee: 2 },
+  { id: "area-74", name: "بنيد القار", fee: 2 },
+  { id: "area-75", name: "بنيدر", fee: 6 },
+  { id: "area-76", name: "بيان", fee: 2 },
+  { id: "area-77", name: "جابر الأحمد", fee: 2 },
+  { id: "area-78", name: "جليب الشيوخ", fee: 2 },
+  { id: "area-79", name: "حطين", fee: 2 },
+  { id: "area-80", name: "حولي", fee: 2 },
+  { id: "area-81", name: "خيران", fee: 2 },
+  { id: "area-82", name: "خيطان", fee: 2 },
+  { id: "area-83", name: "دسمان", fee: 2 },
+  { id: "area-84", name: "سعد العبدالله", fee: 2 },
+  { id: "area-85", name: "سلوى", fee: 2 },
+  { id: "area-86", name: "شمال غرب الصليبيخات", fee: 2 },
+  { id: "area-87", name: "صباح الأحمد", fee: 2 },
+  { id: "area-88", name: "صباح السالم", fee: 2 },
+  { id: "area-89", name: "صبحان", fee: 2 },
+  { id: "area-90", name: "ضاحية جابر العلي", fee: 2 },
+  { id: "area-91", name: "ضاحية صباح الناصر", fee: 2 },
+  { id: "area-92", name: "ضاحية عبدالله السالم", fee: 2 },
+  { id: "area-93", name: "ضاحية مبارك العبدالله", fee: 2 },
+  { id: "area-94", name: "عبد الله المبارك", fee: 2 },
+  { id: "area-95", name: "علي صباح السالم - أم الهيمان", fee: 5 },
+  { id: "area-96", name: "غرب عبدالله المبارك", fee: 2 },
+  { id: "area-97", name: "غرناطة", fee: 2 },
+  { id: "area-98", name: "فهد الأحمد", fee: 2 },
+  { id: "area-99", name: "قرطبة", fee: 2 },
+  { id: "area-100", name: "كبد", fee: 6 },
+  { id: "area-101", name: "كيفان", fee: 2 },
+  { id: "area-102", name: "مبارك الكبير", fee: 2 },
+  { id: "area-103", name: "مشرف", fee: 2 },
+  { id: "area-104", name: "ميدان حولي", fee: 2 },
+  { id: "area-105", name: "ميناء الأحمدي", fee: 2 },
+  { id: "area-106", name: "ميناء عبدالله", fee: 2 },
+  { id: "area-107", name: "هدية", fee: 2 }
 ];
 
 export default function CheckoutPage() {
@@ -25,6 +125,7 @@ export default function CheckoutPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedRegionId, setSelectedRegionId] = useState("");
+  const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
   const [addressDetail, setAddressDetail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod"); // "cod" or "online"
   
@@ -36,16 +137,16 @@ export default function CheckoutPage() {
   const hasItems = items.length > 0;
 
   // Find selected shipping fee
-  const selectedRegion = REGIONS.find(r => r.id === selectedRegionId);
-  const shippingFee = selectedRegion ? selectedRegion.fee : 0;
-
+  const selectedRegion = KUWAIT_SHIPPING_ZONES.find(r => r.id === selectedRegionId);
+  const shippingFee = selectedShippingFee;
+ 
   const getCleanAmount = (priceHtml: string | null) => {
     const cleaned = cleanPrice(priceHtml);
     return cleaned ? parseFloat(cleaned) : 0;
   };
-
+ 
   const cartSubtotal = getCleanAmount(cart?.subtotal || "0.000");
-  const grandTotal = cartSubtotal + shippingFee;
+  const grandTotal = cartSubtotal + selectedShippingFee;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,12 +302,17 @@ export default function CheckoutPage() {
               <select
                 id="region"
                 value={selectedRegionId}
-                onChange={(e) => setSelectedRegionId(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedRegionId(val);
+                  const zone = KUWAIT_SHIPPING_ZONES.find(z => z.id === val);
+                  setSelectedShippingFee(zone ? zone.fee : 0);
+                }}
                 disabled={submitting}
                 required
               >
-                <option value="">-- اختر المنطقة --</option>
-                {REGIONS.map((r) => (
+                <option value="" disabled>اختر المنطقة...</option>
+                {KUWAIT_SHIPPING_ZONES.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name} (رسوم التوصيل: {r.fee.toFixed(3)} د.ك)
                   </option>
@@ -301,7 +407,7 @@ export default function CheckoutPage() {
             <div className="summary-row">
               <span>رسوم التوصيل</span>
               <span>
-                {selectedRegion ? `${shippingFee.toFixed(3)} د.ك` : "يحدد بعد اختيار المنطقة"}
+                {selectedRegionId ? `${selectedShippingFee.toFixed(3)} د.ك` : "يحدد بعد اختيار المنطقة"}
               </span>
             </div>
 
