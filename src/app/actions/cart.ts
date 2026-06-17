@@ -126,10 +126,11 @@ export async function checkoutAction(
   phone: string,
   address1: string,
   city: string,
-  sessionToken?: string
+  sessionToken?: string,
+  email?: string
 ) {
   try {
-    const email = `${phone}@vapecart.local`;
+    const finalEmail = email || `${phone}@vapecart.local`;
     const input = {
       clientMutationId: "vapecart-checkout",
       billing: {
@@ -139,7 +140,7 @@ export async function checkoutAction(
         address1,
         city,
         country: "KW",
-        email,
+        email: finalEmail,
       },
       shipping: {
         firstName,

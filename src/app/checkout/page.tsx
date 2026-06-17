@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
@@ -123,15 +123,63 @@ export default function CheckoutPage() {
 
   // Form State
   const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedRegionId, setSelectedRegionId] = useState("");
   const [selectedShippingFee, setSelectedShippingFee] = useState<number>(0);
   const [addressDetail, setAddressDetail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod"); // "cod" or "online"
   
+  // Searchable Dropdown state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Submit State
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Handle click outside searchable dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle shipping zone input typing
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setIsDropdownOpen(true);
+    const matched = KUWAIT_SHIPPING_ZONES.find(
+      (z) => z.name.trim() === val.trim()
+    );
+    if (matched) {
+      setSelectedRegionId(matched.id);
+      setSelectedShippingFee(matched.fee);
+    } else {
+      setSelectedRegionId("");
+      setSelectedShippingFee(0);
+    }
+  };
+
+  // Handle shipping zone selection from dropdown list
+  const handleSelectZone = (zone: typeof KUWAIT_SHIPPING_ZONES[0]) => {
+    setSelectedRegionId(zone.id);
+    setSelectedShippingFee(zone.fee);
+    setSearchQuery(zone.name);
+    setIsDropdownOpen(false);
+  };
+
+  // Filter zones dynamically
+  const filteredZones = KUWAIT_SHIPPING_ZONES.filter((zone) =>
+    zone.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const items = cart?.contents?.nodes || [];
   const hasItems = items.length > 0;
@@ -169,6 +217,17 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Validate Email
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
+      setErrorMsg("الرجاء إدخال البريد الإلكتروني.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setErrorMsg("الرجاء إدخال بريد إلكتروني صالح.");
+      return;
+    }
+
     // Validate Region
     if (!selectedRegionId) {
       setErrorMsg("الرجاء اختيار منطقة التوصيل.");
@@ -199,7 +258,8 @@ export default function CheckoutPage() {
         cleanPhone,
         addressDetail,
         selectedRegion?.name || "",
-        sessionToken
+        sessionToken,
+        cleanEmail
       );
 
       if (res.success && res.order) {
@@ -298,26 +358,58 @@ export default function CheckoutPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="region">المنطقة في الكويت *</label>
-              <select
-                id="region"
-                value={selectedRegionId}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSelectedRegionId(val);
-                  const zone = KUWAIT_SHIPPING_ZONES.find(z => z.id === val);
-                  setSelectedShippingFee(zone ? zone.fee : 0);
-                }}
+              <label htmlFor="email">البريد الإلكتروني *</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="البريد الإلكتروني"
                 disabled={submitting}
                 required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="region">المنطقة في الكويت *</label>
+              <div
+                ref={dropdownRef}
+                className={`searchable-dropdown-wrapper ${isDropdownOpen ? "open" : ""}`}
               >
-                <option value="" disabled>اختر المنطقة...</option>
-                {KUWAIT_SHIPPING_ZONES.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
+                <input
+                  type="text"
+                  id="region"
+                  value={searchQuery}
+                  onFocus={() => setIsDropdownOpen(true)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="ابحث واختر المنطقة..."
+                  disabled={submitting}
+                  required
+                  autoComplete="off"
+                />
+                <span className="dropdown-indicator">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+                {isDropdownOpen && (
+                  <ul className="dropdown-list">
+                    {filteredZones.length > 0 ? (
+                      filteredZones.map((r) => (
+                        <li
+                          key={r.id}
+                          className={`dropdown-item ${selectedRegionId === r.id ? "active" : ""}`}
+                          onMouseDown={() => handleSelectZone(r)}
+                        >
+                          {r.name}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="dropdown-no-results">لا توجد نتائج مطابقة</li>
+                    )}
+                  </ul>
+                )}
+              </div>
             </div>
 
             <div className="form-group">

@@ -2873,6 +2873,96 @@ button.header-cart-button:hover {
   color: var(--color-text-muted);
 }
 
+/* Force RTL alignment and direction for Kuwaiti phone input */
+.form-group input[type="tel"] {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Custom Searchable Dropdown (Combobox) */
+.searchable-dropdown-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchable-dropdown-wrapper input {
+  width: 100%;
+  padding-left: 2.5rem; /* Space for dropdown indicator on the left in RTL */
+}
+
+.dropdown-indicator {
+  position: absolute;
+  top: 50%;
+  left: var(--space-md); /* Positioned on the left for RTL layout */
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  transition: transform var(--transition-base);
+}
+
+.searchable-dropdown-wrapper.open .dropdown-indicator {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 4px;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+}
+
+.dropdown-item {
+  padding: var(--space-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  text-align: right;
+}
+
+.dropdown-item:hover {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+}
+
+.dropdown-item.active {
+  background: var(--color-accent-glow);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.dropdown-no-results {
+  padding: var(--space-md);
+  color: var(--color-text-muted);
+  text-align: center;
+  font-size: var(--font-size-sm);
+}
+
 /* Payment picker card */
 .payment-options {
   display: flex;
