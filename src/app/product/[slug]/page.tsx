@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug });
+    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     const product = data?.product;
 
     if (!product) {
@@ -70,7 +70,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   let product = null;
 
   try {
-    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug });
+    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     product = data?.product;
   } catch (error) {
     console.error("Error fetching product details:", error);

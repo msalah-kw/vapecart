@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
-  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100 });
+  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100 }, undefined, { revalidate: 60 });
   const products: WooProduct[] = data?.products?.nodes ?? [];
 
   return (

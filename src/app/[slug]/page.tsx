@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     const page = data?.page;
 
     if (!page) {
@@ -71,7 +71,7 @@ export default async function StaticPage({ params }: PageProps) {
 
   let page = null;
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     page = data?.page;
   } catch (error) {
     console.error("Error fetching page details:", error);

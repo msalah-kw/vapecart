@@ -40,7 +40,7 @@ export async function generateMetadata({
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 1,
-    });
+    }, undefined, { revalidate: 60 });
 
     const category = data?.productCategory;
 
@@ -85,7 +85,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 100,
-    });
+    }, undefined, { revalidate: 60 });
 
     if (data?.productCategory) {
       isFound = true;

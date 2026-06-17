@@ -45,8 +45,8 @@ const HOMEPAGE_CATEGORIES = [
 export default async function HomePage() {
   /* Fetch data in parallel */
   const [productsRes, categoriesRes] = await Promise.all([
-    fetchGraphQL(GET_LATEST_PRODUCTS_QUERY, { first: 12 }),
-    fetchGraphQL(GET_CATEGORIES_QUERY),
+    fetchGraphQL(GET_LATEST_PRODUCTS_QUERY, { first: 12 }, undefined, { revalidate: 60 }),
+    fetchGraphQL(GET_CATEGORIES_QUERY, {}, undefined, { revalidate: 60 }),
   ]);
 
   const products: WooProduct[] = productsRes.data?.products?.nodes ?? [];

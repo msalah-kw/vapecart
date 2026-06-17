@@ -6,7 +6,11 @@ const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://l
 export async function fetchGraphQL(
   query: string,
   variables: Record<string, unknown> = {},
-  sessionToken?: string
+  sessionToken?: string,
+  options?: {
+    revalidate?: number | false;
+    cache?: RequestCache;
+  }
 ) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -16,15 +20,24 @@ export async function fetchGraphQL(
     headers["woocommerce-session"] = `Session ${sessionToken}`;
   }
 
-  const res = await fetch(GRAPHQL_ENDPOINT, {
+  const fetchOptions: RequestInit = {
     method: "POST",
     headers,
     body: JSON.stringify({
       query,
       variables,
     }),
-    cache: "no-store",
-  });
+  };
+
+  if (options?.revalidate !== undefined) {
+    fetchOptions.next = { revalidate: options.revalidate };
+  } else if (options?.cache) {
+    fetchOptions.cache = options.cache;
+  } else {
+    fetchOptions.cache = "no-store";
+  }
+
+  const res = await fetch(GRAPHQL_ENDPOINT, fetchOptions);
 
   const json = await res.json();
 
@@ -49,7 +62,6 @@ export const GET_ALL_PRODUCTS_QUERY = `
         slug
         databaseId
         name
-        shortDescription
         image {
           sourceUrl
           altText
@@ -58,10 +70,12 @@ export const GET_ALL_PRODUCTS_QUERY = `
         ... on SimpleProduct {
           price
           regularPrice
+          salePrice
         }
         ... on VariableProduct {
           price
           regularPrice
+          salePrice
         }
         productCategories {
           nodes {
@@ -82,7 +96,6 @@ export const GET_LATEST_PRODUCTS_QUERY = `
         slug
         databaseId
         name
-        shortDescription
         image {
           sourceUrl
           altText
@@ -91,10 +104,12 @@ export const GET_LATEST_PRODUCTS_QUERY = `
         ... on SimpleProduct {
           price
           regularPrice
+          salePrice
         }
         ... on VariableProduct {
           price
           regularPrice
+          salePrice
         }
         productCategories {
           nodes {
@@ -188,7 +203,6 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
         slug
         databaseId
         name
-        shortDescription
         image {
           sourceUrl
           altText
@@ -197,10 +211,12 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
         ... on SimpleProduct {
           price
           regularPrice
+          salePrice
         }
         ... on VariableProduct {
           price
           regularPrice
+          salePrice
         }
         productCategories {
           nodes {
