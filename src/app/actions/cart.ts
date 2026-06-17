@@ -157,11 +157,10 @@ export async function checkoutAction(
     };
 
     if (shippingArea && shippingFee !== undefined) {
+      input.customerNote = `📦 منطقة التوصيل: ${shippingArea}\n💰 رسوم التوصيل: ${shippingFee} د.ك\n💵 الإجمالي شامل التوصيل: يُضاف ${shippingFee} د.ك على مجموع المنتجات`;
       input.metaData = [
         { key: "shipping_area", value: shippingArea },
         { key: "shipping_fee", value: String(shippingFee) },
-        { key: "_shipping_fee", value: String(shippingFee) },
-        { key: "_shipping_area", value: shippingArea }
       ];
     }
 
