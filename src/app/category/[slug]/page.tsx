@@ -58,11 +58,14 @@ export async function generateMetadata({
 
     const seo = category.seo;
     const title = seo?.title || `${cleanTitle} – سحبة فيب`;
-    const description = seo?.metaDesc || cleanDesc.slice(0, 160);
+    const description = seo?.metaDesc || cleanDesc.slice(0, 155);
 
     return {
       title,
       description,
+      alternates: {
+        canonical: `/category/${decodedSlug}`,
+      },
       openGraph: {
         title,
         description,

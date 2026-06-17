@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
     const cleanTitle = sanitizeTerminology(product.name);
     const rawDesc = product.shortDescription || product.description || "";
-    const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
+    const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 155);
 
     const seo = product.seo;
     const title = seo?.title || `${cleanTitle} | سحبة فيب`;
@@ -51,6 +51,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     return {
       title,
       description,
+      alternates: {
+        canonical: `/product/${decodedSlug}`,
+      },
       openGraph: {
         title,
         description,

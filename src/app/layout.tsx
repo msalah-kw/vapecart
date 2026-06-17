@@ -6,6 +6,7 @@ import Header from "@/app/components/Header";
 import CartToast from "@/app/components/CartToast";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com"),
   title: "سحبة فيب – متجر فيب إلكتروني | الكويت",
   description:
     "أفضل متجر فيب إلكتروني في الكويت. سحبات جاهزة، بودات، نكهات سولت ونكهات فيب بأسعار منافسة وتوصيل سريع.",
@@ -31,7 +32,7 @@ export default function RootLayout({
             <CartToast />
 
             {/* ─── Main Content ─── */}
-            <main>{children}</main>
+            <div className="main-content">{children}</div>
 
             {/* ─── Footer ─── */}
             <footer className="site-footer">

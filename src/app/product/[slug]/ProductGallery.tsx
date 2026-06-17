@@ -41,6 +41,7 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
             src={activeImage.sourceUrl}
             alt={activeImage.altText || productName}
             fill
+            priority
             sizes="(max-width: 992px) 100vw, 50vw"
             className="product-gallery-main-image"
           />
