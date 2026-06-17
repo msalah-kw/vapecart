@@ -12,6 +12,10 @@ const GET_PAGE_BY_SLUG_QUERY = `
     page(id: $id, idType: URI) {
       title
       content
+      seo {
+        title
+        metaDesc
+      }
     }
   }
 `;
@@ -53,8 +57,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const title = `${page.title} | سحبة فيب`;
-    const description = `عرض صفحة ${page.title} ومحتوياتها.`;
+    const seo = page.seo;
+    const title = seo?.title || `${page.title} | سحبة فيب`;
+    const description = seo?.metaDesc || `عرض صفحة ${page.title} ومحتوياتها.`;
 
     return {
       title,

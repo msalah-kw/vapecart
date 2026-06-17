@@ -56,8 +56,9 @@ export async function generateMetadata({
       ? sanitizeTerminology(category.description)
       : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
-    const title = `${cleanTitle} – سحبة فيب`;
-    const description = cleanDesc.slice(0, 160);
+    const seo = category.seo;
+    const title = seo?.title || `${cleanTitle} – سحبة فيب`;
+    const description = seo?.metaDesc || cleanDesc.slice(0, 160);
 
     return {
       title,

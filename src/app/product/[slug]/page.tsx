@@ -44,8 +44,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const rawDesc = product.shortDescription || product.description || "";
     const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
 
-    const title = `${cleanTitle} | سحبة فيب`;
-    const description = cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
+    const seo = product.seo;
+    const title = seo?.title || `${cleanTitle} | سحبة فيب`;
+    const description = seo?.metaDesc || cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
 
     return {
       title,

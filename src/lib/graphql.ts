@@ -158,6 +158,10 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       name
       description
       shortDescription
+      seo {
+        title
+        metaDesc
+      }
       image {
         sourceUrl
         altText
@@ -257,6 +261,10 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
       name
       description
       count
+      seo {
+        title
+        metaDesc
+      }
     }
   }
 `;
@@ -286,6 +294,11 @@ export const GET_CATEGORIES_QUERY = `
 
 /* ─────────────── Type Definitions ─────────────── */
 
+export interface SeoMetadata {
+  title?: string | null;
+  metaDesc?: string | null;
+}
+
 export interface WooProduct {
   __typename?: "SimpleProduct" | "VariableProduct";
   id: string;
@@ -294,6 +307,7 @@ export interface WooProduct {
   name: string;
   description?: string;
   shortDescription: string;
+  seo?: SeoMetadata | null;
   image: {
     sourceUrl: string;
     altText: string;
@@ -350,6 +364,7 @@ export interface WooCategory {
   name: string;
   slug: string;
   count: number;
+  seo?: SeoMetadata | null;
   image: {
     sourceUrl: string;
   } | null;
