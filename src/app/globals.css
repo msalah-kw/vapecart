@@ -3177,9 +3177,64 @@ button.header-cart-button:hover {
   }
 }
 
+@media (max-width: 768px) {
+  .checkout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: var(--space-lg) !important;
+  }
+
+  .checkout-page-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: var(--space-md) var(--space-sm) !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .checkout-form-section,
+  .checkout-summary-section,
+  .checkout-card,
+  .form-group,
+  .payment-options,
+  .payment-option-label,
+  .checkout-items-list,
+  .checkout-item-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .checkout-card {
+    padding: var(--space-md) !important;
+    margin: 0 !important;
+  }
+
+  .checkout-item-name-qty {
+    flex: 1;
+    min-width: 0;
+    max-width: none !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: var(--space-sm);
+  }
+}
+
 @media (max-width: 576px) {
   .checkout-page-container {
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-lg) var(--space-md) !important;
   }
 
   .success-actions {

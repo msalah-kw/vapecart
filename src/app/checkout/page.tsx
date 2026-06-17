@@ -314,7 +314,7 @@ export default function CheckoutPage() {
                 <option value="" disabled>اختر المنطقة...</option>
                 {KUWAIT_SHIPPING_ZONES.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.name} (رسوم التوصيل: {r.fee.toFixed(3)} د.ك)
+                    {r.name}
                   </option>
                 ))}
               </select>
