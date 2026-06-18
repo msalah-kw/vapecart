@@ -158,7 +158,6 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       name
       description
       shortDescription
-      stockStatus
       image {
         sourceUrl
         altText
@@ -295,7 +294,6 @@ export interface WooProduct {
   name: string;
   description?: string;
   shortDescription: string;
-  stockStatus?: string | null;
   image: {
     sourceUrl: string;
     altText: string;
@@ -368,14 +366,16 @@ export interface WooCategory {
 /**
  * Strip HTML tags from WooCommerce descriptions
  */
-export function stripHtml(html: string): string {
+export function stripHtml(html: string | null | undefined): string {
+  if (!html) return "";
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
 }
 
 /**
  * Truncate text to approximately N characters, breaking at word boundaries
  */
-export function truncateText(text: string, maxLen: number = 160): string {
+export function truncateText(text: string | null | undefined, maxLen: number = 160): string {
+  if (!text) return "";
   const clean = stripHtml(text);
   if (clean.length <= maxLen) return clean;
   return clean.substring(0, maxLen).replace(/\s+\S*$/, "") + "…";

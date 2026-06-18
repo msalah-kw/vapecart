@@ -41,8 +41,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
 
     const cleanTitle = sanitizeTerminology(product.name);
-    const rawDesc = product.shortDescription || product.description || "";
-    const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
+    const rawDesc = (typeof product.shortDescription === 'string' && product.shortDescription) || 
+                    (typeof product.description === 'string' && product.description) || 
+                    "";
+    const cleanDesc = rawDesc ? truncateText(sanitizeTerminology(rawDesc), 160) : "";
 
     const title = `${cleanTitle} | سحبة فيب`;
     const description = cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
@@ -103,8 +105,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const name = sanitizeTerminology(product.name);
-  const description = sanitizeTerminology(product.description || "");
-  const shortDescription = sanitizeTerminology(product.shortDescription || "");
+  const description = typeof product.description === 'string' ? sanitizeTerminology(product.description) : "";
+  const shortDescription = typeof product.shortDescription === 'string' ? sanitizeTerminology(product.shortDescription) : "";
   
   const price = cleanPrice(product.price);
   const regularPrice = cleanPrice(product.regularPrice);
@@ -120,16 +122,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Product Structured Data (JSON-LD Schema)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
   const canonicalUrl = `${siteUrl}/product/${product.slug}`;
-  const cleanLdDesc = truncateText(sanitizeTerminology(product.shortDescription || product.description || ""), 160);
+  
+  const rawLdDesc = (typeof product.shortDescription === 'string' && product.shortDescription) || 
+                    (typeof product.description === 'string' && product.description) || 
+                    "";
+  const cleanLdDesc = rawLdDesc ? truncateText(sanitizeTerminology(rawLdDesc), 160) : "";
   
   const productImages = [
     ...(product.image?.sourceUrl ? [product.image.sourceUrl] : []),
     ...(galleryImages.map((img: { sourceUrl: string }) => img.sourceUrl).filter(Boolean) || [])
   ];
 
-  const rawStock = product.stockStatus || "IN_STOCK";
+  const rawStock = (product as any).stockStatus || "IN_STOCK";
   const isOutOfStock = rawStock === "OUT_OF_STOCK" || rawStock === "OUTOFSTOCK";
   const availability = isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock";
+
+  const priceString = typeof product.price === 'string' ? product.price.replace(/[^0-9.]/g, '') : "0";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -142,7 +150,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       "@type": "Offer",
       "url": canonicalUrl,
       "priceCurrency": "KWD",
-      "price": price || "0.000",
+      "price": priceString,
       "priceValidUntil": "2027-12-31",
       "availability": availability,
       "itemCondition": "https://schema.org/NewCondition"
