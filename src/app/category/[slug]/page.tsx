@@ -56,20 +56,30 @@ export async function generateMetadata({
       ? sanitizeTerminology(category.description)
       : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
-    const seo = category.seo;
-    const title = seo?.title || `${cleanTitle} – سحبة فيب`;
-    const description = seo?.metaDesc || cleanDesc.slice(0, 155);
+    const title = `${cleanTitle} – سحبة فيب`;
+    const description = cleanDesc.length > 160 ? cleanDesc.slice(0, 157) + "…" : cleanDesc;
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
+    const canonicalUrl = `${siteUrl}/category/${decodedSlug}`;
 
     return {
       title,
       description,
       alternates: {
-        canonical: `/category/${decodedSlug}`,
+        canonical: canonicalUrl,
       },
       openGraph: {
         title,
         description,
+        url: canonicalUrl,
+        siteName: "سحبة فيب",
+        locale: "ar_KW",
         images: [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
       },
     };
   } catch (error) {

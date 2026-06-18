@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { fetchGraphQL } from "@/lib/graphql";
+import { fetchGraphQL, truncateText } from "@/lib/graphql";
 import ScriptExecutor from "@/app/components/ScriptExecutor";
 
 interface PageProps {
@@ -12,10 +12,6 @@ const GET_PAGE_BY_SLUG_QUERY = `
     page(id: $id, idType: URI) {
       title
       content
-      seo {
-        title
-        metaDesc
-      }
     }
   }
 `;
@@ -57,20 +53,31 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const seo = page.seo;
-    const title = seo?.title || `${page.title} | سحبة فيب`;
-    const description = seo?.metaDesc || `عرض صفحة ${page.title} ومحتوياتها.`;
+    const title = `${page.title} | سحبة فيب`;
+    const cleanDesc = page.content ? truncateText(page.content, 160) : "";
+    const description = cleanDesc || `عرض صفحة ${page.title} ومحتوياتها.`;
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
+    const canonicalUrl = `${siteUrl}/${decodedSlug}`;
 
     return {
       title,
       description,
       alternates: {
-        canonical: `/${decodedSlug}`,
+        canonical: canonicalUrl,
       },
       openGraph: {
         title,
         description,
+        url: canonicalUrl,
+        siteName: "سحبة فيب",
+        locale: "ar_KW",
         images: [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
       },
     };
   } catch (error) {

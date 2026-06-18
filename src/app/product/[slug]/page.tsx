@@ -42,22 +42,33 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
     const cleanTitle = sanitizeTerminology(product.name);
     const rawDesc = product.shortDescription || product.description || "";
-    const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 155);
+    const cleanDesc = truncateText(sanitizeTerminology(rawDesc), 160);
 
-    const seo = product.seo;
-    const title = seo?.title || `${cleanTitle} | سحبة فيب`;
-    const description = seo?.metaDesc || cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
+    const title = `${cleanTitle} | سحبة فيب`;
+    const description = cleanDesc || `تفاصيل ومواصفات ${cleanTitle} - سحبة فيب.`;
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
+    const canonicalUrl = `${siteUrl}/product/${product.slug}`;
 
     return {
       title,
       description,
       alternates: {
-        canonical: `/product/${decodedSlug}`,
+        canonical: canonicalUrl,
       },
       openGraph: {
         title,
         description,
-        images: product.image?.sourceUrl ? [{ url: product.image.sourceUrl }] : [],
+        url: canonicalUrl,
+        siteName: "سحبة فيب",
+        locale: "ar_KW",
+        images: product.image?.sourceUrl ? [{ url: product.image.sourceUrl, alt: product.image.altText || cleanTitle }] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: product.image?.sourceUrl ? [product.image.sourceUrl] : [],
       },
     };
   } catch (error) {
@@ -106,8 +117,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const attributes = product.attributes?.nodes || [];
   const variations = product.variations?.nodes || [];
 
+  // Product Structured Data (JSON-LD Schema)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
+  const canonicalUrl = `${siteUrl}/product/${product.slug}`;
+  const cleanLdDesc = truncateText(sanitizeTerminology(product.shortDescription || product.description || ""), 160);
+  
+  const productImages = [
+    ...(product.image?.sourceUrl ? [product.image.sourceUrl] : []),
+    ...(galleryImages.map((img: { sourceUrl: string }) => img.sourceUrl).filter(Boolean) || [])
+  ];
+
+  const rawStock = product.stockStatus || "IN_STOCK";
+  const isOutOfStock = rawStock === "OUT_OF_STOCK" || rawStock === "OUTOFSTOCK";
+  const availability = isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": name,
+    "image": productImages,
+    "description": cleanLdDesc || `تفاصيل ومواصفات المنتج ${name}`,
+    "sku": product.databaseId?.toString() || product.id,
+    "offers": {
+      "@type": "Offer",
+      "url": canonicalUrl,
+      "priceCurrency": "KWD",
+      "price": price || "0.000",
+      "priceValidUntil": "2027-12-31",
+      "availability": availability,
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
   return (
     <main className="product-page-container container">
+      {/* Product JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumbs / Navigation Trail */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
         <Link href="/">الرئيسية</Link>
