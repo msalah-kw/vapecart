@@ -1,26 +1,20 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface TermNode {
+  id: string;
   name: string;
   slug: string;
 }
 
-interface AttributeNode {
-  name: string;
-  label: string | null;
-  terms?: {
-    nodes: TermNode[];
-  } | null;
-}
-
 interface StoreFiltersProps {
-  attributes: AttributeNode[];
+  availableNicotine: TermNode[];
+  availableFlavors: TermNode[];
 }
 
-export default function StoreFilters({ attributes }: StoreFiltersProps) {
+export default function StoreFilters({ availableNicotine, availableFlavors }: StoreFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -64,7 +58,7 @@ export default function StoreFilters({ attributes }: StoreFiltersProps) {
     params.delete("before");
     params.delete("after");
 
-    const queryKey = attrName === "pa_nicotine" ? "nicotine" : "flavor";
+    const queryKey = (attrName === "pa_nic" || attrName === "pa_nicotine") ? "nicotine" : "flavor";
     const currentList = queryKey === "nicotine" ? [...activeNicotine] : [...activeFlavor];
 
     let newList;
@@ -87,11 +81,6 @@ export default function StoreFilters({ attributes }: StoreFiltersProps) {
   const handleClearFilters = () => {
     router.push(pathname, { scroll: false });
   };
-
-  // Filter attributes from WP to only include nicotine and flavor
-  const filterableAttributes = attributes.filter(
-    (attr) => attr.name === "pa_nicotine" || attr.name === "pa_flavor"
-  );
 
   return (
     <>
@@ -135,38 +124,49 @@ export default function StoreFilters({ attributes }: StoreFiltersProps) {
           </select>
         </div>
 
-        {/* Attribute Checkbox Groups */}
-        {filterableAttributes.map((attr) => {
-          const queryKey = attr.name === "pa_nicotine" ? "nicotine" : "flavor";
-          const activeList = queryKey === "nicotine" ? activeNicotine : activeFlavor;
-          const terms = attr.terms?.nodes || [];
-
-          if (terms.length === 0) return null;
-
-          // Safely resolve attribute label
-          const attrLabel = attr.label || (attr.name === "pa_nicotine" ? "قوة النيكوتين" : "النكهة");
-
-          return (
-            <div key={attr.name} className="filter-group">
-              <span className="filter-group-title">{attrLabel}</span>
-              <div className="filter-checkbox-list">
-                {terms.map((term) => {
-                  const isChecked = activeList.includes(term.slug);
-                  return (
-                    <label key={term.slug} className="filter-checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={(e) => handleCheckboxChange(attr.name, term.slug, e.target.checked)}
-                      />
-                      <span>{term.name}</span>
-                    </label>
-                  );
-                })}
-              </div>
+        {/* Nicotine Filter Group */}
+        {availableNicotine && availableNicotine.length > 0 ? (
+          <div className="filter-group">
+            <span className="filter-group-title">قوة النيكوتين</span>
+            <div className="filter-checkbox-list">
+              {availableNicotine.map((term) => {
+                const isChecked = activeNicotine.includes(term.slug);
+                return (
+                  <label key={term.id} className="filter-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => handleCheckboxChange("pa_nic", term.slug, e.target.checked)}
+                    />
+                    <span>{term.name}</span>
+                  </label>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ) : null}
+
+        {/* Flavor Filter Group */}
+        {availableFlavors && availableFlavors.length > 0 ? (
+          <div className="filter-group">
+            <span className="filter-group-title">النكهة</span>
+            <div className="filter-checkbox-list">
+              {availableFlavors.map((term) => {
+                const isChecked = activeFlavor.includes(term.slug);
+                return (
+                  <label key={term.id} className="filter-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => handleCheckboxChange("pa_flavours", term.slug, e.target.checked)}
+                    />
+                    <span>{term.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {/* Reset Button */}
         <button

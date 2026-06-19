@@ -114,7 +114,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   let hasError = false;
 
   // Fetch Category Info & Store Filters
-  let attributes = [];
+  let nicotineTerms = [];
+  let flavorTerms = [];
   try {
     const [categoryRes, filtersRes] = await Promise.all([
       fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
@@ -133,7 +134,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       );
       productCount = categoryRes.data.productCategory.count || 0;
     }
-    attributes = filtersRes.data?.productAttributes?.nodes || [];
+    const attributes = filtersRes.data?.productAttributes?.nodes || [];
+    const nicotineAttr = attributes.find((attr: any) => attr.name === "pa_nic" || attr.name === "pa_nicotine");
+    const flavorAttr = attributes.find((attr: any) => attr.name === "pa_flavours" || attr.name === "pa_flavor");
+    nicotineTerms = nicotineAttr?.terms?.nodes || [];
+    flavorTerms = flavorAttr?.terms?.nodes || [];
   } catch (error) {
     console.error("[CategoryPage] Error fetching category page base details:", error);
     hasError = true;
@@ -164,23 +169,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   // Map taxonomy filters
   const filters = [];
   if (nicotine) {
-    const nicotineTerms = nicotine.split(",").filter(Boolean);
-    if (nicotineTerms.length > 0) {
+    const nicotineTermsVal = nicotine.split(",").filter(Boolean);
+    if (nicotineTermsVal.length > 0) {
       filters.push({
-        taxonomy: "PA_NICOTINE",
-        terms: nicotineTerms,
-        field: "SLUG",
+        taxonomy: "PA_NIC",
+        terms: nicotineTermsVal,
         operator: "IN"
       });
     }
   }
   if (flavor) {
-    const flavorTerms = flavor.split(",").filter(Boolean);
-    if (flavorTerms.length > 0) {
+    const flavorTermsVal = flavor.split(",").filter(Boolean);
+    if (flavorTermsVal.length > 0) {
       filters.push({
-        taxonomy: "PA_FLAVOR",
-        terms: flavorTerms,
-        field: "SLUG",
+        taxonomy: "PA_FLAVOURS",
+        terms: flavorTermsVal,
         operator: "IN"
       });
     }
@@ -221,7 +224,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
       {/* Layout Sidebar + Grid */}
       <div className="shop-page-layout">
-        <StoreFilters attributes={attributes} />
+        <StoreFilters availableNicotine={nicotineTerms} availableFlavors={flavorTerms} />
         
         <div className="shop-content" id="category-products">
           <Suspense key={`${sort}-${nicotine}-${flavor}`} fallback={<ProductGridSkeleton />}>

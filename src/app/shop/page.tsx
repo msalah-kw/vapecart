@@ -27,10 +27,15 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const flavor = resolvedSearchParams.flavor;
 
   // Fetch filters dynamically on the server (cache for 1 hour since attributes change rarely)
-  let attributes = [];
+  let nicotineTerms = [];
+  let flavorTerms = [];
   try {
     const filtersRes = await fetchGraphQL(GET_STORE_FILTERS, {}, undefined, { revalidate: 3600 });
-    attributes = filtersRes.data?.productAttributes?.nodes || [];
+    const attributes = filtersRes.data?.productAttributes?.nodes || [];
+    const nicotineAttr = attributes.find((attr: any) => attr.name === "pa_nic" || attr.name === "pa_nicotine");
+    const flavorAttr = attributes.find((attr: any) => attr.name === "pa_flavours" || attr.name === "pa_flavor");
+    nicotineTerms = nicotineAttr?.terms?.nodes || [];
+    flavorTerms = flavorAttr?.terms?.nodes || [];
   } catch (error) {
     console.error("Failed to fetch store filters:", error);
   }
@@ -46,23 +51,21 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   // Translate URL Filter Parameters to WPGraphQL Taxonomy Filters
   const filters = [];
   if (nicotine) {
-    const nicotineTerms = nicotine.split(",").filter(Boolean);
-    if (nicotineTerms.length > 0) {
+    const nicotineTermsVal = nicotine.split(",").filter(Boolean);
+    if (nicotineTermsVal.length > 0) {
       filters.push({
-        taxonomy: "PA_NICOTINE",
-        terms: nicotineTerms,
-        field: "SLUG",
+        taxonomy: "PA_NIC",
+        terms: nicotineTermsVal,
         operator: "IN"
       });
     }
   }
   if (flavor) {
-    const flavorTerms = flavor.split(",").filter(Boolean);
-    if (flavorTerms.length > 0) {
+    const flavorTermsVal = flavor.split(",").filter(Boolean);
+    if (flavorTermsVal.length > 0) {
       filters.push({
-        taxonomy: "PA_FLAVOR",
-        terms: flavorTerms,
-        field: "SLUG",
+        taxonomy: "PA_FLAVOURS",
+        terms: flavorTermsVal,
         operator: "IN"
       });
     }
@@ -92,7 +95,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       {/* ─── Layout: Sidebar + Grid ─── */}
       <div className="shop-page-layout">
-        <StoreFilters attributes={attributes} />
+        <StoreFilters availableNicotine={nicotineTerms} availableFlavors={flavorTerms} />
         
         <div className="shop-content" id="shop-products">
           <Suspense key={`${sort}-${nicotine}-${flavor}`} fallback={<ProductGridSkeleton />}>

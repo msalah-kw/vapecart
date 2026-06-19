@@ -340,16 +340,19 @@ export const GET_PRODUCTS_BY_SEARCH = `
 
 export const GET_STORE_FILTERS = `
   query GetStoreFilters {
-    productAttributes {
+    productAttributes(first: 100) {
       nodes {
         id
         name
+        slug
         label
-        terms {
-          nodes {
-            id
-            name
-            slug
+        ... on GlobalProductAttribute {
+          terms(first: 100) {
+            nodes {
+              id
+              name
+              slug
+            }
           }
         }
       }
