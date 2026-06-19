@@ -84,8 +84,8 @@ export async function fetchGraphQL(
 export const GET_ALL_PRODUCTS_QUERY = `
   query GetAllProducts(
     $first: Int = 100
-    $orderby: [ProductOrderbyInput]
-    $taxonomyFilter: ProductTaxonomyFilterInput
+    $orderby: [ProductsOrderbyInput]
+    $taxonomyFilter: ProductTaxonomyInput
   ) {
     products(first: $first, where: { orderby: $orderby, taxonomyFilter: $taxonomyFilter }) {
       nodes {
@@ -240,8 +240,8 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
     $categorySlugId: ID!
     $categorySlugStr: String!
     $first: Int = 100
-    $orderby: [ProductOrderbyInput]
-    $taxonomyFilter: ProductTaxonomyFilterInput
+    $orderby: [ProductsOrderbyInput]
+    $taxonomyFilter: ProductTaxonomyInput
   ) {
     products(where: { category: $categorySlugStr, orderby: $orderby, taxonomyFilter: $taxonomyFilter }, first: $first) {
       nodes {
@@ -343,13 +343,11 @@ export const GET_STORE_FILTERS = `
     productAttributes {
       nodes {
         id
-        databaseId
         name
         label
         terms {
           nodes {
             id
-            databaseId
             name
             slug
           }
