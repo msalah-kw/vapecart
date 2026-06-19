@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import {
   fetchGraphQL,
   GET_PRODUCTS_BY_CATEGORY_QUERY,
-  GET_STORE_FILTERS,
   WooProduct,
   truncateText,
 } from "@/lib/graphql";
 import ProductCard from "@/app/components/ProductCard";
-import StoreFilters from "@/app/components/StoreFilters";
-import ProductGridSkeleton from "@/app/components/ProductGridSkeleton";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sort?: string; nicotine?: string; flavor?: string }>;
 }
 
 // Translate/Replace database content to conform with strict terminology requirements
@@ -96,51 +91,42 @@ export async function generateMetadata({
   }
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const resolvedParams = await params;
-  const resolvedSearchParams = await searchParams;
-  
+  console.log("[CategoryPage] ➤ Raw params:", JSON.stringify(resolvedParams));
   const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
+  console.log("[CategoryPage] ➤ Decoded slug:", decodedSlug);
 
-  const sort = resolvedSearchParams.sort;
-  const nicotine = resolvedSearchParams.nicotine;
-  const flavor = resolvedSearchParams.flavor;
-
+  let products: WooProduct[] = [];
   let categoryName = "";
   let categoryDescription = "";
   let productCount = 0;
   let isFound = false;
   let hasError = false;
 
-  // Fetch Category Info & Store Filters
-  let nicotineTerms = [];
-  let flavorTerms = [];
   try {
-    const [categoryRes, filtersRes] = await Promise.all([
-      fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
-        categorySlugId: decodedSlug,
-        categorySlugStr: decodedSlug,
-        first: 1, // Only to get category details
-      }, undefined, { revalidate: 60 }),
-      fetchGraphQL(GET_STORE_FILTERS, {}, undefined, { revalidate: 3600 })
-    ]);
+    const { data } = await fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
+      categorySlugId: decodedSlug,
+      categorySlugStr: decodedSlug,
+      first: 100,
+    }, undefined, { revalidate: 60 });
 
-    if (categoryRes.data?.productCategory) {
+    console.log("[CategoryPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
+
+    if (data?.productCategory) {
       isFound = true;
-      categoryName = sanitizeTerminology(categoryRes.data.productCategory.name);
+      categoryName = sanitizeTerminology(data.productCategory.name);
       categoryDescription = sanitizeTerminology(
-        categoryRes.data.productCategory.description || ""
+        data.productCategory.description || ""
       );
-      productCount = categoryRes.data.productCategory.count || 0;
+      productCount = data.productCategory.count || 0;
+      products = data.products?.nodes ?? [];
+    } else {
+      console.warn("[CategoryPage] ⚠ productCategory is null/undefined for slug:", decodedSlug);
     }
-    const attributes = filtersRes.data?.productAttributes?.nodes || [];
-    const nicotineAttr = attributes.find((attr: any) => attr.name === "pa_nic" || attr.name === "pa_nicotine");
-    const flavorAttr = attributes.find((attr: any) => attr.name === "pa_flavours" || attr.name === "pa_flavor");
-    nicotineTerms = nicotineAttr?.terms?.nodes || [];
-    flavorTerms = flavorAttr?.terms?.nodes || [];
   } catch (error) {
-    console.error("[CategoryPage] Error fetching category page base details:", error);
+    console.error("[CategoryPage] ✖ Error fetching category products:", error);
     hasError = true;
   }
 
@@ -150,7 +136,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <div className="container">
           <div className="empty-state" style={{ margin: "4rem auto", textAlign: "center" }}>
             <div className="empty-state-icon" style={{ fontSize: "3rem" }}>⚠️</div>
-            <p>حدث خطأ أثناء تحميل القسم. الرجاء المحاولة مرة أخرى لاحقاً.</p>
+            <p>حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة مرة أخرى لاحقاً.</p>
           </div>
         </div>
       );
@@ -158,44 +144,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     notFound();
   }
 
-  // Map sort parameter
-  let orderby: { field: string; order: string }[] = [{ field: "DATE", order: "DESC" }];
-  if (sort === "price_asc") {
-    orderby = [{ field: "PRICE", order: "ASC" }];
-  } else if (sort === "price_desc") {
-    orderby = [{ field: "PRICE", order: "DESC" }];
-  }
-
-  // Map taxonomy filters
-  const filters = [];
-  if (nicotine) {
-    const nicotineTermsVal = nicotine.split(",").filter(Boolean);
-    if (nicotineTermsVal.length > 0) {
-      filters.push({
-        taxonomy: "PA_NIC",
-        terms: nicotineTermsVal,
-        operator: "IN"
-      });
-    }
-  }
-  if (flavor) {
-    const flavorTermsVal = flavor.split(",").filter(Boolean);
-    if (flavorTermsVal.length > 0) {
-      filters.push({
-        taxonomy: "PA_FLAVOURS",
-        terms: flavorTermsVal,
-        operator: "IN"
-      });
-    }
-  }
-
-  const taxonomyFilter = filters.length > 0 ? {
-    relation: "AND",
-    filters
-  } : null;
-
   return (
-    <div className="container" style={{ paddingBottom: "3rem" }}>
+    <div className="container">
       {/* Breadcrumbs */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
         <Link href="/">الرئيسية</Link>
@@ -222,73 +172,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         </div>
       </div>
 
-      {/* Layout Sidebar + Grid */}
-      <div className="shop-page-layout">
-        <StoreFilters availableNicotine={nicotineTerms} availableFlavors={flavorTerms} />
-        
-        <div className="shop-content" id="category-products">
-          <Suspense key={`${sort}-${nicotine}-${flavor}`} fallback={<ProductGridSkeleton />}>
-            <CategoryProductsList
-              categorySlugId={decodedSlug}
-              categorySlugStr={decodedSlug}
-              orderby={orderby}
-              taxonomyFilter={taxonomyFilter}
-            />
-          </Suspense>
-        </div>
+      {/* Product Grid */}
+      <div className="shop-content" id="category-products">
+        {products.length > 0 ? (
+          <div className="products-grid">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-state-icon">🔍</div>
+            <p>لا توجد منتجات حالياً في هذا القسم</p>
+          </div>
+        )}
       </div>
-    </div>
-  );
-}
-
-interface CategoryProductsListProps {
-  categorySlugId: string;
-  categorySlugStr: string;
-  orderby: { field: string; order: string }[];
-  taxonomyFilter: any;
-}
-
-async function CategoryProductsList({
-  categorySlugId,
-  categorySlugStr,
-  orderby,
-  taxonomyFilter,
-}: CategoryProductsListProps) {
-  let products: WooProduct[] = [];
-  try {
-    const { data } = await fetchGraphQL(
-      GET_PRODUCTS_BY_CATEGORY_QUERY,
-      {
-        categorySlugId,
-        categorySlugStr,
-        first: 100,
-        orderby,
-        taxonomyFilter,
-      },
-      undefined,
-      { cache: "no-store" } // Bypassing caching for filtered results
-    );
-    products = data?.products?.nodes || [];
-  } catch (error) {
-    console.error("Failed to fetch category products listing:", error);
-  }
-
-  if (products.length === 0) {
-    return (
-      <div className="empty-state" style={{ margin: "2rem auto", textAlign: "center" }}>
-        <div className="empty-state-icon" style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
-        <p style={{ fontSize: "1.1rem", color: "var(--color-text-secondary)" }}>
-          لا توجد منتجات تطابق الفلاتر المحددة. جرب إزالة بعض الفلاتر.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="products-grid">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
     </div>
   );
 }

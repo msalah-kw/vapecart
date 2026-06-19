@@ -82,12 +82,8 @@ export async function fetchGraphQL(
 /* ─────────────── Product Queries ─────────────── */
 
 export const GET_ALL_PRODUCTS_QUERY = `
-  query GetAllProducts(
-    $first: Int = 100
-    $orderby: [ProductsOrderbyInput]
-    $taxonomyFilter: ProductTaxonomyInput
-  ) {
-    products(first: $first, where: { orderby: $orderby, taxonomyFilter: $taxonomyFilter }) {
+  query GetAllProducts($first: Int = 100) {
+    products(first: $first) {
       nodes {
         id
         slug
@@ -240,10 +236,8 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
     $categorySlugId: ID!
     $categorySlugStr: String!
     $first: Int = 100
-    $orderby: [ProductsOrderbyInput]
-    $taxonomyFilter: ProductTaxonomyInput
   ) {
-    products(where: { category: $categorySlugStr, orderby: $orderby, taxonomyFilter: $taxonomyFilter }, first: $first) {
+    products(where: { category: $categorySlugStr }, first: $first) {
       nodes {
         id
         slug
@@ -331,28 +325,6 @@ export const GET_PRODUCTS_BY_SEARCH = `
           nodes {
             name
             slug
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_STORE_FILTERS = `
-  query GetStoreFilters {
-    productAttributes(first: 100) {
-      nodes {
-        id
-        name
-        slug
-        label
-        ... on GlobalProductAttribute {
-          terms(first: 100) {
-            nodes {
-              id
-              name
-              slug
-            }
           }
         }
       }
