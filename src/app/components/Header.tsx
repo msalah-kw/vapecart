@@ -176,8 +176,32 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Actions: Cart Icon */}
+          {/* Actions: Search & Cart Icon */}
           <div className="header-actions">
+            <Link
+              href="/search"
+              className="header-search-link"
+              aria-label="البحث عن منتج"
+            >
+              <span className="search-icon-wrapper">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <span className="search-text desktop-only">البحث</span>
+            </Link>
+
             <button 
               onClick={() => setIsMiniCartOpen(true)}
               className="header-cart-link header-cart-button" 

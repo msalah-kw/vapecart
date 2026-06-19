@@ -266,6 +266,60 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
   }
 `;
 
+export const GET_PRODUCTS_BY_SEARCH = `
+  query GetProductsBySearch($searchQuery: String!, $first: Int = 50) {
+    products(where: { search: $searchQuery }, first: $first) {
+      nodes {
+        id
+        slug
+        databaseId
+        name
+        image {
+          sourceUrl
+          altText
+        }
+        __typename
+        ... on SimpleProduct {
+          price
+          regularPrice
+          salePrice
+          stockStatus
+          stockQuantity
+        }
+        ... on VariableProduct {
+          price
+          regularPrice
+          salePrice
+          stockStatus
+          stockQuantity
+          variations {
+            nodes {
+              id
+              databaseId
+              name
+              price
+              regularPrice
+              stockStatus
+              attributes {
+                nodes {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+        productCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const GET_CATEGORIES_QUERY = `
   query GetCategories {
     productCategories(first: 50, where: { hideEmpty: true }) {
