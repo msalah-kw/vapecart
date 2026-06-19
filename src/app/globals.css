@@ -748,6 +748,26 @@ button.header-cart-button:hover {
   border-radius: var(--radius-lg);
 }
 
+@media (max-width: 768px) {
+  .hero-banner {
+    overflow: hidden;
+  }
+  .banner-link {
+    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+  .banner-image {
+    width: calc(100% + 500px) !important;
+    max-width: none !important;
+    margin-left: -250px !important;
+    margin-right: -250px !important;
+    height: auto;
+    object-fit: cover;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════
    HERO SECTION
    ═══════════════════════════════════════════════════════ */
