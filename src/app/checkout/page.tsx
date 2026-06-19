@@ -184,9 +184,8 @@ export default function CheckoutPage() {
   const items = cart?.contents?.nodes || [];
   const hasItems = items.length > 0;
 
-  // Find selected shipping fee
+  // Resolve selected region object for label display
   const selectedRegion = KUWAIT_SHIPPING_ZONES.find(r => r.id === selectedRegionId);
-  const shippingFee = selectedShippingFee;
  
   const getCleanAmount = (priceHtml: string | null) => {
     const cleaned = cleanPrice(priceHtml);
@@ -499,20 +498,26 @@ export default function CheckoutPage() {
             </div>
 
             <div className="summary-row">
-              <span>رسوم التوصيل</span>
+              <span>رسوم التوصيل {selectedRegion ? `(${selectedRegion.name})` : ""}</span>
               <span>
-                {selectedRegionId ? `${selectedShippingFee.toFixed(3)} د.ك` : "يحدد بعد اختيار المنطقة"}
+                {selectedRegionId
+                  ? `${selectedShippingFee.toFixed(3)} د.ك`
+                  : "اختر المنطقة أولاً"}
               </span>
             </div>
 
             <div className="summary-divider"></div>
 
             <div className="summary-row total">
-              <span>الإجمالي الكلي</span>
+              <span>الإجمالي النهائي</span>
               <span className="total-val">{grandTotal.toFixed(3)} د.ك</span>
             </div>
 
-            <button type="submit" className="submit-order-btn" disabled={submitting}>
+            <button
+              type="submit"
+              className="submit-order-btn"
+              disabled={submitting || !selectedRegionId}
+            >
               {submitting ? (
                 <>
                   <div className="mini-spinner"></div>
@@ -520,7 +525,7 @@ export default function CheckoutPage() {
                 </>
               ) : (
                 <>
-                  تاكيد الطلب
+                  تأكيد الطلب — {grandTotal.toFixed(3)} د.ك
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
                   </svg>

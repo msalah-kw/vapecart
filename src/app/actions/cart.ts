@@ -6,7 +6,6 @@ import {
   ADD_TO_CART_MUTATION,
   UPDATE_CART_QUANTITY_MUTATION,
   REMOVE_FROM_CART_MUTATION,
-  CHECKOUT_MUTATION,
   CREATE_ORDER_MUTATION,
 } from "@/lib/graphql";
 
@@ -148,7 +147,7 @@ export async function checkoutAction(
     }
 
     const input: Record<string, unknown> = {
-      clientMutationId: "vapecart-checkout",
+      clientMutationId: "vapecart-create-order",
       billing: {
         firstName,
         lastName,
@@ -167,7 +166,6 @@ export async function checkoutAction(
         country: "KW",
       },
       paymentMethod: "cod",
-      shipToDifferentAddress: false,
       shippingLines,
       metaData: [
         { key: "shipping_area", value: shippingArea || "" },
@@ -176,15 +174,14 @@ export async function checkoutAction(
     };
 
     const { data, sessionToken: newSessionToken } = await fetchGraphQL(
-      CHECKOUT_MUTATION,
+      CREATE_ORDER_MUTATION,
       { input },
       sessionToken
     );
 
     return {
       success: true,
-      order: data?.checkout?.order || null,
-      result: data?.checkout?.result || null,
+      order: data?.createOrder?.order || null,
       sessionToken: newSessionToken || sessionToken || null,
     };
   } catch (error: any) {
