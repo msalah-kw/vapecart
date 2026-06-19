@@ -6,10 +6,8 @@ import {
   ADD_TO_CART_MUTATION,
   UPDATE_CART_QUANTITY_MUTATION,
   REMOVE_FROM_CART_MUTATION,
-  CREATE_ORDER_MUTATION,
+  CHECKOUT_MUTATION,
 } from "@/lib/graphql";
-
-import type { ShippingLineInput } from "@/lib/graphql";
 
 export async function getCartAction(sessionToken?: string) {
   try {
@@ -136,18 +134,8 @@ export async function checkoutAction(
   try {
     const finalEmail = email || `${phone}@vapecart.local`;
 
-    // Build shippingLines array for WooCommerce to natively calculate the grand total
-    const shippingLines: ShippingLineInput[] = [];
-    if (shippingArea && shippingFee !== undefined && shippingFee > 0) {
-      shippingLines.push({
-        methodId: "flat_rate",
-        methodTitle: `توصيل إلى ${shippingArea}`,
-        total: shippingFee.toFixed(3),
-      });
-    }
-
     const input: Record<string, unknown> = {
-      clientMutationId: "vapecart-create-order",
+      clientMutationId: "vapecart-checkout",
       billing: {
         firstName,
         lastName,
@@ -166,7 +154,7 @@ export async function checkoutAction(
         country: "KW",
       },
       paymentMethod: "cod",
-      shippingLines,
+      shipToDifferentAddress: false,
       metaData: [
         { key: "shipping_area", value: shippingArea || "" },
         { key: "shipping_fee", value: String(shippingFee ?? 0) },
@@ -174,14 +162,15 @@ export async function checkoutAction(
     };
 
     const { data, sessionToken: newSessionToken } = await fetchGraphQL(
-      CREATE_ORDER_MUTATION,
+      CHECKOUT_MUTATION,
       { input },
       sessionToken
     );
 
     return {
       success: true,
-      order: data?.createOrder?.order || null,
+      order: data?.checkout?.order || null,
+      result: data?.checkout?.result || null,
       sessionToken: newSessionToken || sessionToken || null,
     };
   } catch (error: any) {
