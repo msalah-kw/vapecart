@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import {
   fetchGraphQL,
   GET_PRODUCTS_BY_CATEGORY_QUERY,
+  GET_STORE_FILTERS,
   WooProduct,
-  cleanPrice,
   truncateText,
 } from "@/lib/graphql";
 import ProductCard from "@/app/components/ProductCard";
+import StoreFilters from "@/app/components/StoreFilters";
+import ProductGridSkeleton from "@/app/components/ProductGridSkeleton";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ sort?: string; nicotine?: string; flavor?: string }>;
 }
 
 // Translate/Replace database content to conform with strict terminology requirements
@@ -92,42 +96,46 @@ export async function generateMetadata({
   }
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const resolvedParams = await params;
-  console.log("[CategoryPage] ➤ Raw params:", JSON.stringify(resolvedParams));
+  const resolvedSearchParams = await searchParams;
+  
   const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
-  console.log("[CategoryPage] ➤ Decoded slug:", decodedSlug);
 
-  let products: WooProduct[] = [];
+  const sort = resolvedSearchParams.sort;
+  const nicotine = resolvedSearchParams.nicotine;
+  const flavor = resolvedSearchParams.flavor;
+
   let categoryName = "";
   let categoryDescription = "";
   let productCount = 0;
   let isFound = false;
   let hasError = false;
 
+  // Fetch Category Info & Store Filters
+  let attributes = [];
   try {
-    const { data } = await fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
-      categorySlugId: decodedSlug,
-      categorySlugStr: decodedSlug,
-      first: 100,
-    }, undefined, { revalidate: 60 });
+    const [categoryRes, filtersRes] = await Promise.all([
+      fetchGraphQL(GET_PRODUCTS_BY_CATEGORY_QUERY, {
+        categorySlugId: decodedSlug,
+        categorySlugStr: decodedSlug,
+        first: 1, // Only to get category details
+      }, undefined, { revalidate: 60 }),
+      fetchGraphQL(GET_STORE_FILTERS, {}, undefined, { revalidate: 3600 })
+    ]);
 
-    console.log("[CategoryPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
-
-    if (data?.productCategory) {
+    if (categoryRes.data?.productCategory) {
       isFound = true;
-      categoryName = sanitizeTerminology(data.productCategory.name);
+      categoryName = sanitizeTerminology(categoryRes.data.productCategory.name);
       categoryDescription = sanitizeTerminology(
-        data.productCategory.description || ""
+        categoryRes.data.productCategory.description || ""
       );
-      productCount = data.productCategory.count || 0;
-      products = data.products?.nodes ?? [];
-    } else {
-      console.warn("[CategoryPage] ⚠ productCategory is null/undefined for slug:", decodedSlug);
+      productCount = categoryRes.data.productCategory.count || 0;
     }
+    attributes = filtersRes.data?.productAttributes?.nodes || [];
   } catch (error) {
-    console.error("[CategoryPage] ✖ Error fetching category products:", error);
+    console.error("[CategoryPage] Error fetching category page base details:", error);
     hasError = true;
   }
 
@@ -137,7 +145,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="container">
           <div className="empty-state" style={{ margin: "4rem auto", textAlign: "center" }}>
             <div className="empty-state-icon" style={{ fontSize: "3rem" }}>⚠️</div>
-            <p>حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة مرة أخرى لاحقاً.</p>
+            <p>حدث خطأ أثناء تحميل القسم. الرجاء المحاولة مرة أخرى لاحقاً.</p>
           </div>
         </div>
       );
@@ -145,8 +153,46 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
+  // Map sort parameter
+  let orderby: { field: string; order: string }[] = [{ field: "DATE", order: "DESC" }];
+  if (sort === "price_asc") {
+    orderby = [{ field: "PRICE", order: "ASC" }];
+  } else if (sort === "price_desc") {
+    orderby = [{ field: "PRICE", order: "DESC" }];
+  }
+
+  // Map taxonomy filters
+  const filters = [];
+  if (nicotine) {
+    const nicotineTerms = nicotine.split(",").filter(Boolean);
+    if (nicotineTerms.length > 0) {
+      filters.push({
+        taxonomy: "PA_NICOTINE",
+        terms: nicotineTerms,
+        field: "SLUG",
+        operator: "IN"
+      });
+    }
+  }
+  if (flavor) {
+    const flavorTerms = flavor.split(",").filter(Boolean);
+    if (flavorTerms.length > 0) {
+      filters.push({
+        taxonomy: "PA_FLAVOR",
+        terms: flavorTerms,
+        field: "SLUG",
+        operator: "IN"
+      });
+    }
+  }
+
+  const taxonomyFilter = filters.length > 0 ? {
+    relation: "AND",
+    filters
+  } : null;
+
   return (
-    <div className="container">
+    <div className="container" style={{ paddingBottom: "3rem" }}>
       {/* Breadcrumbs */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
         <Link href="/">الرئيسية</Link>
@@ -173,21 +219,73 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
 
-      {/* Product Grid */}
-      <div className="shop-content" id="category-products">
-        {products.length > 0 ? (
-          <div className="products-grid">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <div className="empty-state-icon">🔍</div>
-            <p>لا توجد منتجات حالياً في هذا القسم</p>
-          </div>
-        )}
+      {/* Layout Sidebar + Grid */}
+      <div className="shop-page-layout">
+        <StoreFilters attributes={attributes} />
+        
+        <div className="shop-content" id="category-products">
+          <Suspense key={`${sort}-${nicotine}-${flavor}`} fallback={<ProductGridSkeleton />}>
+            <CategoryProductsList
+              categorySlugId={decodedSlug}
+              categorySlugStr={decodedSlug}
+              orderby={orderby}
+              taxonomyFilter={taxonomyFilter}
+            />
+          </Suspense>
+        </div>
       </div>
+    </div>
+  );
+}
+
+interface CategoryProductsListProps {
+  categorySlugId: string;
+  categorySlugStr: string;
+  orderby: { field: string; order: string }[];
+  taxonomyFilter: any;
+}
+
+async function CategoryProductsList({
+  categorySlugId,
+  categorySlugStr,
+  orderby,
+  taxonomyFilter,
+}: CategoryProductsListProps) {
+  let products: WooProduct[] = [];
+  try {
+    const { data } = await fetchGraphQL(
+      GET_PRODUCTS_BY_CATEGORY_QUERY,
+      {
+        categorySlugId,
+        categorySlugStr,
+        first: 100,
+        orderby,
+        taxonomyFilter,
+      },
+      undefined,
+      { cache: "no-store" } // Bypassing caching for filtered results
+    );
+    products = data?.products?.nodes || [];
+  } catch (error) {
+    console.error("Failed to fetch category products listing:", error);
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="empty-state" style={{ margin: "2rem auto", textAlign: "center" }}>
+        <div className="empty-state-icon" style={{ fontSize: "3rem", marginBottom: "1rem" }}>🔍</div>
+        <p style={{ fontSize: "1.1rem", color: "var(--color-text-secondary)" }}>
+          لا توجد منتجات تطابق الفلاتر المحددة. جرب إزالة بعض الفلاتر.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="products-grid">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
     </div>
   );
 }

@@ -82,8 +82,12 @@ export async function fetchGraphQL(
 /* ─────────────── Product Queries ─────────────── */
 
 export const GET_ALL_PRODUCTS_QUERY = `
-  query GetAllProducts($first: Int = 100) {
-    products(first: $first) {
+  query GetAllProducts(
+    $first: Int = 100
+    $orderby: [ProductOrderbyInput]
+    $taxonomyFilter: ProductTaxonomyFilterInput
+  ) {
+    products(first: $first, where: { orderby: $orderby, taxonomyFilter: $taxonomyFilter }) {
       nodes {
         id
         slug
@@ -98,11 +102,15 @@ export const GET_ALL_PRODUCTS_QUERY = `
           price
           regularPrice
           salePrice
+          stockStatus
+          stockQuantity
         }
         ... on VariableProduct {
           price
           regularPrice
           salePrice
+          stockStatus
+          stockQuantity
         }
         productCategories {
           nodes {
@@ -228,8 +236,14 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
 /* ─────────────── Category Queries ─────────────── */
 
 export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
-  query GetProductsByCategory($categorySlugId: ID!, $categorySlugStr: String!, $first: Int = 100) {
-    products(where: { category: $categorySlugStr }, first: $first) {
+  query GetProductsByCategory(
+    $categorySlugId: ID!
+    $categorySlugStr: String!
+    $first: Int = 100
+    $orderby: [ProductOrderbyInput]
+    $taxonomyFilter: ProductTaxonomyFilterInput
+  ) {
+    products(where: { category: $categorySlugStr, orderby: $orderby, taxonomyFilter: $taxonomyFilter }, first: $first) {
       nodes {
         id
         slug
@@ -244,11 +258,15 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
           price
           regularPrice
           salePrice
+          stockStatus
+          stockQuantity
         }
         ... on VariableProduct {
           price
           regularPrice
           salePrice
+          stockStatus
+          stockQuantity
         }
         productCategories {
           nodes {
@@ -311,6 +329,27 @@ export const GET_PRODUCTS_BY_SEARCH = `
         }
         productCategories {
           nodes {
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_STORE_FILTERS = `
+  query GetStoreFilters {
+    productAttributes {
+      nodes {
+        id
+        databaseId
+        name
+        label
+        terms {
+          nodes {
+            id
+            databaseId
             name
             slug
           }
