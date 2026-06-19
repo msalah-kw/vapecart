@@ -494,3 +494,52 @@ export const CHECKOUT_MUTATION = `
   }
 `;
 
+export const CREATE_ORDER_MUTATION = `
+  mutation CreateOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
+      order {
+        databaseId
+        orderKey
+        total
+        status
+      }
+    }
+  }
+`;
+
+/* ─────────────── Checkout / Order Type Definitions ─────────────── */
+
+export interface ShippingLineInput {
+  methodId: string;
+  methodTitle: string;
+  total: string;
+}
+
+export interface CreateOrderLineItemInput {
+  productId: number;
+  quantity: number;
+  variationId?: number;
+}
+
+export interface CreateOrderAddressInput {
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  address1?: string;
+  city?: string;
+  country?: string;
+  email?: string;
+}
+
+export interface CreateOrderInput {
+  clientMutationId?: string;
+  paymentMethod?: string;
+  billing?: CreateOrderAddressInput;
+  shipping?: CreateOrderAddressInput;
+  lineItems?: CreateOrderLineItemInput[];
+  shippingLines?: ShippingLineInput[];
+  customerNote?: string;
+  metaData?: { key: string; value: string }[];
+  isPaid?: boolean;
+}
+

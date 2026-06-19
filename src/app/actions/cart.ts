@@ -7,7 +7,10 @@ import {
   UPDATE_CART_QUANTITY_MUTATION,
   REMOVE_FROM_CART_MUTATION,
   CHECKOUT_MUTATION,
+  CREATE_ORDER_MUTATION,
 } from "@/lib/graphql";
+
+import type { ShippingLineInput } from "@/lib/graphql";
 
 export async function getCartAction(sessionToken?: string) {
   try {
@@ -133,7 +136,18 @@ export async function checkoutAction(
 ) {
   try {
     const finalEmail = email || `${phone}@vapecart.local`;
-    const input: any = {
+
+    // Build shippingLines array for WooCommerce to natively calculate the grand total
+    const shippingLines: ShippingLineInput[] = [];
+    if (shippingArea && shippingFee !== undefined && shippingFee > 0) {
+      shippingLines.push({
+        methodId: "flat_rate",
+        methodTitle: `توصيل إلى ${shippingArea}`,
+        total: shippingFee.toFixed(3),
+      });
+    }
+
+    const input: Record<string, unknown> = {
       clientMutationId: "vapecart-checkout",
       billing: {
         firstName,
@@ -154,15 +168,12 @@ export async function checkoutAction(
       },
       paymentMethod: "cod",
       shipToDifferentAddress: false,
+      shippingLines,
+      metaData: [
+        { key: "shipping_area", value: shippingArea || "" },
+        { key: "shipping_fee", value: String(shippingFee ?? 0) },
+      ],
     };
-
-    if (shippingArea && shippingFee !== undefined) {
-      input.customerNote = `📦 منطقة التوصيل: ${shippingArea}\n💰 رسوم التوصيل: ${shippingFee} د.ك\n💵 الإجمالي شامل التوصيل: يُضاف ${shippingFee} د.ك على مجموع المنتجات`;
-      input.metaData = [
-        { key: "shipping_area", value: shippingArea },
-        { key: "shipping_fee", value: String(shippingFee) },
-      ];
-    }
 
     const { data, sessionToken: newSessionToken } = await fetchGraphQL(
       CHECKOUT_MUTATION,
