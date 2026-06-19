@@ -13,7 +13,7 @@ export interface CartItem {
   quantity: number;
   subtotal: string;
   total: string;
-  product: {
+  product?: {
     node: {
       id: string;
       databaseId: number;
@@ -26,7 +26,7 @@ export interface CartItem {
       price: string | null;
       regularPrice: string | null;
     };
-  };
+  } | null;
   variation?: {
     node: {
       id: string;
@@ -153,9 +153,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       // Find the just-added item from the updated cart to build the toast
       const addedNode = res.cart.contents.nodes.find(
-        (n: CartItem) => n.product.node.databaseId === productId
+        (n: CartItem) => n.product?.node?.databaseId === productId
       );
-      if (addedNode) {
+      if (addedNode && addedNode.product?.node) {
         const p = addedNode.product.node;
         showToast({
           name: p.name,

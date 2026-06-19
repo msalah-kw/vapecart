@@ -336,9 +336,10 @@ export default function Header() {
           ) : (
             <div className="minicart-items" style={{ display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
               {cart.contents.nodes.map((item) => {
-                const productNode = item.product.node;
+                const productNode = item.product?.node;
+                if (!productNode) return null;
                 const isVariable = !!item.variation;
-                const itemImage = isVariable ? item.variation?.node.image?.sourceUrl || productNode.image?.sourceUrl : productNode.image?.sourceUrl;
+                const itemImage = isVariable ? item.variation?.node?.image?.sourceUrl || productNode.image?.sourceUrl : productNode.image?.sourceUrl;
                 const itemName = productNode.name;
                 const variationName = isVariable ? item.variation?.node.name : "";
                 

@@ -23,6 +23,7 @@ interface VariationNode {
   name: string;
   price: string | null;
   regularPrice: string | null;
+  stockStatus?: string | null;
   attributes?: {
     nodes: {
       name: string;
@@ -35,6 +36,7 @@ interface AddToCartFormProps {
   productId: number;
   attributes: AttributeNode[] | null;
   variations: VariationNode[] | null;
+  stockStatus?: string | null;
 }
 
 // Helper to safely URL-decode values (avoiding URIError)
@@ -64,7 +66,7 @@ function cleanAttributeLabel(val: string): string {
   return clean;
 }
 
-export default function AddToCartForm({ productId, attributes, variations }: AddToCartFormProps) {
+export default function AddToCartForm({ productId, attributes, variations, stockStatus }: AddToCartFormProps) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -83,15 +85,18 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
     }));
   };
 
-  const hasAttributes = attributes && attributes.length > 0;
-  const isVariable = hasAttributes && variations && variations.length > 0;
+  const variationAttributes = attributes ? attributes.filter(attr => attr.variation) : [];
+  const hasAttributes = variationAttributes.length > 0;
+  const isVariable = attributes ? attributes.some(attr => attr.variation) : false;
+  const isOutOfStock = stockStatus === "OUT_OF_STOCK" || stockStatus === "OUTOFSTOCK";
+  const variationsIncomplete = isVariable && (!variations || variations.length === 0);
 
   // Find variation matching selected attributes map
   const findMatchingVariation = () => {
-    if (!variations || !hasAttributes) return null;
+    if (!variations || !hasAttributes || variationsIncomplete) return null;
     
     const selectedKeys = Object.keys(selectedAttributes);
-    if (selectedKeys.length !== attributes.length) return null;
+    if (selectedKeys.length !== variationAttributes.length) return null;
 
     return variations.find(variation => {
       const varAttrs = variation.attributes?.nodes || [];
@@ -103,7 +108,11 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
   };
 
   const matchingVariation = isVariable ? findMatchingVariation() : null;
-  const canAddToCart = !isVariable || !!matchingVariation;
+  const isVariationOutOfStock = matchingVariation
+    ? (matchingVariation.stockStatus === "OUT_OF_STOCK" || matchingVariation.stockStatus === "OUTOFSTOCK")
+    : false;
+
+  const canAddToCart = !isOutOfStock && !variationsIncomplete && (!isVariable || (!!matchingVariation && !isVariationOutOfStock));
 
   const handleAdd = async () => {
     if (!canAddToCart || isAdding) return;
@@ -126,9 +135,15 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
     btnText = "جاري الإضافة...";
   } else if (success) {
     btnText = "تمت الإضافة بنجاح!";
+  } else if (isOutOfStock) {
+    btnText = "نفدت الكمية";
+  } else if (variationsIncomplete) {
+    btnText = "غير متوفر: خيارات غير مكتملة";
   } else if (isVariable && !matchingVariation) {
     const selectedCount = Object.keys(selectedAttributes).length;
     btnText = selectedCount === 0 ? "اختر الخيارات للمتابعة" : "أكمل بقية الخيارات";
+  } else if (isVariable && isVariationOutOfStock) {
+    btnText = "نفدت الكمية (هذا الخيار غير متوفر)";
   }
 
   return (
@@ -136,7 +151,7 @@ export default function AddToCartForm({ productId, attributes, variations }: Add
       {/* Attribute/Variation Selectors */}
       {hasAttributes && (
         <div className="product-attributes">
-          {attributes.map((attr) => {
+          {variationAttributes.map((attr) => {
             const attrLabel = attr.label || attr.name.replace("pa_", "");
             const selectedOption = selectedAttributes[attr.name];
 

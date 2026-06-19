@@ -196,10 +196,14 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       ... on SimpleProduct {
         price
         regularPrice
+        stockStatus
+        stockQuantity
       }
       ... on VariableProduct {
         price
         regularPrice
+        stockStatus
+        stockQuantity
         variations {
           nodes {
             id
@@ -207,6 +211,7 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
             name
             price
             regularPrice
+            stockStatus
             attributes {
               nodes {
                 name
@@ -326,6 +331,7 @@ export interface WooProduct {
       name: string;
       price: string | null;
       regularPrice: string | null;
+      stockStatus?: string | null;
       attributes?: {
         nodes: {
           name: string;
@@ -336,6 +342,8 @@ export interface WooProduct {
   } | null;
   price: string | null;
   regularPrice: string | null;
+  stockStatus?: string | null;
+  stockQuantity?: number | null;
   productCategories?: {
     nodes: {
       name: string;
@@ -385,7 +393,7 @@ export function truncateText(text: string | null | undefined, maxLen: number = 1
  * Extract clean price string: "5.000 د.ك" → "5.000"
  * Returns the raw KWD price or null
  */
-export function cleanPrice(priceHtml: string | null): string | null {
+export function cleanPrice(priceHtml: string | null | undefined): string | null {
   if (!priceHtml) return null;
   const cleaned = priceHtml.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
   const match = cleaned.match(/([\d,.]+)/);

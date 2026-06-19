@@ -6,6 +6,7 @@ import {
   GET_PRODUCTS_BY_CATEGORY_QUERY,
   WooProduct,
   cleanPrice,
+  truncateText,
 } from "@/lib/graphql";
 import ProductCard from "@/app/components/ProductCard";
 
@@ -57,7 +58,7 @@ export async function generateMetadata({
       : `تصفح منتجات قسم ${cleanTitle} في متجر سحبة فيب بأفضل الأسعار وتوصيل سريع في الكويت.`;
 
     const title = `${cleanTitle} – سحبة فيب`;
-    const description = cleanDesc.length > 160 ? cleanDesc.slice(0, 157) + "…" : cleanDesc;
+    const description = truncateText(cleanDesc, 160);
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
     const canonicalUrl = `${siteUrl}/category/${decodedSlug}`;

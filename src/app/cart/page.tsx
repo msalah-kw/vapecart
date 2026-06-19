@@ -62,7 +62,8 @@ export default function CartPage() {
           <div className="cart-items-section">
             <div className="cart-items-list">
               {items.map((item) => {
-                const product = item.product.node;
+                const product = item.product?.node;
+                if (!product) return null;
                 const variation = item.variation?.node;
                 const name = sanitizeArabic(variation ? variation.name : product.name);
                 

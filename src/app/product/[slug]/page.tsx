@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText } from "@/lib/graphql";
+import { fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct } from "@/lib/graphql";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 
@@ -89,7 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const decodedSlug = decodeURIComponent(slug);
   console.log("[ProductPage] ➤ Decoded slug:", decodedSlug);
 
-  let product = null;
+  let product: WooProduct | null = null;
 
   try {
     const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
@@ -133,11 +133,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ...(galleryImages.map((img: { sourceUrl: string }) => img.sourceUrl).filter(Boolean) || [])
   ];
 
-  const rawStock = (product as any).stockStatus || "IN_STOCK";
+  const rawStock = product.stockStatus || "IN_STOCK";
   const isOutOfStock = rawStock === "OUT_OF_STOCK" || rawStock === "OUTOFSTOCK";
   const availability = isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock";
 
-  const priceString = typeof product.price === 'string' ? product.price.replace(/[^0-9.]/g, '') : "0";
+  const priceString = cleanPrice(product.price) || "0";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -234,6 +234,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             productId={product.databaseId}
             attributes={attributes}
             variations={variations}
+            stockStatus={rawStock}
           />
 
           {/* Feature Badges */}

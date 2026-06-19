@@ -96,9 +96,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: product.slug });
           if (data?.product) {
             setFullProduct(data.product);
-            // Pre-select first options if any
+            // Pre-select first options if any (only for variation attributes)
             const initialAttrs: Record<string, string> = {};
-            data.product.attributes?.nodes?.forEach((attr: any) => {
+            const variationAttrs = data.product.attributes?.nodes?.filter((attr: { variation: boolean }) => attr.variation) || [];
+            variationAttrs.forEach((attr: { name: string; options: string[] }) => {
               if (attr.options && attr.options.length > 0) {
                 initialAttrs[attr.name] = attr.options[0];
               }
@@ -135,11 +136,16 @@ export default function ProductCard({ product }: ProductCardProps) {
     }));
   };
 
+  const variationAttributes = fullProduct?.attributes?.nodes ? fullProduct.attributes.nodes.filter(attr => attr.variation) : [];
+  const hasAttributes = variationAttributes.length > 0;
+  const variationsIncomplete = isVariable && fullProduct && (!fullProduct.variations?.nodes || fullProduct.variations.nodes.length === 0);
+
   // Find variation matching selected attributes map
   const findMatchingVariation = () => {
-    if (!fullProduct || !fullProduct.variations?.nodes || !fullProduct.attributes?.nodes) return null;
+    if (!fullProduct || !fullProduct.variations?.nodes || !fullProduct.attributes?.nodes || variationsIncomplete) return null;
     
-    const attributesNodes = fullProduct.attributes.nodes;
+    const selectedKeys = Object.keys(selectedAttributes);
+    if (selectedKeys.length !== variationAttributes.length) return null;
     
     return fullProduct.variations.nodes.find((variation) => {
       const varAttrs = variation.attributes?.nodes || [];
@@ -151,7 +157,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const matchingVariation = fullProduct ? findMatchingVariation() : null;
-  const canAddToCart = !isVariable || (fullProduct && !!matchingVariation);
+  const isOutOfStock = product.stockStatus === "OUT_OF_STOCK" || product.stockStatus === "OUTOFSTOCK";
+  const isVariationOutOfStock = matchingVariation
+    ? (matchingVariation.stockStatus === "OUT_OF_STOCK" || matchingVariation.stockStatus === "OUTOFSTOCK")
+    : false;
+
+  const canAddToCart = !isOutOfStock && !variationsIncomplete && (!isVariable || (fullProduct && !!matchingVariation && !isVariationOutOfStock));
 
   // Add Variation inside Modal
   const handleModalAdd = async () => {
@@ -313,9 +324,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                   </div>
 
                   {/* Attributes Selectors */}
-                  {fullProduct.attributes?.nodes && fullProduct.attributes.nodes.length > 0 && (
+                  {hasAttributes && (
                     <div className="product-modal-attributes">
-                      {fullProduct.attributes.nodes.map((attr) => {
+                      {variationAttributes.map((attr) => {
                         const attrLabel = attr.label || attr.name.replace("pa_", "");
                         const selectedOption = selectedAttributes[attr.name];
 
@@ -403,7 +414,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                       }}
                       disabled={!canAddToCart || modalAdding}
                     >
-                      {modalAdding ? "جاري الإضافة..." : !matchingVariation ? "اختر الخيارات للمتابعة" : "أضف إلى السلة"}
+                      {modalAdding
+                        ? "جاري الإضافة..."
+                        : isOutOfStock
+                        ? "نفدت الكمية"
+                        : variationsIncomplete
+                        ? "غير متوفر: خيارات غير مكتملة"
+                        : !matchingVariation
+                        ? "اختر الخيارات للمتابعة"
+                        : isVariationOutOfStock
+                        ? "نفدت الكمية (هذا الخيار غير متوفر)"
+                        : "أضف إلى السلة"}
                     </button>
                   </div>
                 </div>

@@ -471,7 +471,8 @@ export default function CheckoutPage() {
 
             <div className="checkout-items-list">
               {items.map((item) => {
-                const product = item.product.node;
+                const product = item.product?.node;
+                if (!product) return null;
                 const variation = item.variation?.node;
                 const name = variation ? variation.name : product.name;
                 const qty = item.quantity;
