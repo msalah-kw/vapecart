@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import {
   fetchGraphQL,
   GET_CART_QUERY,
@@ -8,6 +9,20 @@ import {
   REMOVE_FROM_CART_MUTATION,
   CHECKOUT_MUTATION,
 } from "@/lib/graphql";
+
+/**
+ * Clear WooCommerce/JWT cookies on the server
+ */
+async function clearSessionCookies() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("woocommerce-session");
+    cookieStore.delete("wp_jwt");
+    cookieStore.delete("woo-session");
+  } catch (err) {
+    console.error("[clearSessionCookies] Error deleting cookies:", err);
+  }
+}
 
 export async function getCartAction(sessionToken?: string) {
   try {
@@ -22,6 +37,32 @@ export async function getCartAction(sessionToken?: string) {
       sessionToken: newSessionToken || sessionToken || null,
     };
   } catch (error: any) {
+    if (error.message === "TOKEN_EXPIRED") {
+      console.warn("getCartAction: Token expired. Clearing cookies and retrying as guest session...");
+      await clearSessionCookies();
+      try {
+        const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+          GET_CART_QUERY,
+          {},
+          undefined
+        );
+        return {
+          success: true,
+          cart: data?.cart || null,
+          sessionToken: newSessionToken || null,
+          clearSession: true,
+        };
+      } catch (retryError: any) {
+        console.error("getCartAction retry failed:", retryError);
+        return {
+          success: false,
+          error: "فشلت عملية جلب السلة بعد انتهاء الصلاحية",
+          sessionToken: null,
+          clearSession: true,
+        };
+      }
+    }
+
     console.error("getCartAction error:", error);
     return {
       success: false,
@@ -54,6 +95,37 @@ export async function addToCartAction(
       sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
     };
   } catch (error: any) {
+    if (error.message === "TOKEN_EXPIRED") {
+      console.warn("addToCartAction: Token expired. Clearing cookies and retrying as guest session...");
+      await clearSessionCookies();
+      try {
+        const { data, sessionToken: newSessionToken } = await fetchGraphQL(
+          ADD_TO_CART_MUTATION,
+          { productId, quantity, variationId },
+          undefined
+        );
+        
+        // Fetch cart using the new guest token
+        const updatedCart = await getCartAction(newSessionToken || undefined);
+        
+        return {
+          success: true,
+          cartItem: data?.addToCart?.cartItem || null,
+          cart: updatedCart.cart,
+          sessionToken: newSessionToken || updatedCart.sessionToken || null,
+          clearSession: true,
+        };
+      } catch (retryError: any) {
+        console.error("addToCartAction retry failed:", retryError);
+        return {
+          success: false,
+          error: "فشلت إضافة المنتج بعد انتهاء صلاحية الجلسة",
+          sessionToken: null,
+          clearSession: true,
+        };
+      }
+    }
+
     console.error("addToCartAction error:", error);
     return {
       success: false,
@@ -83,6 +155,17 @@ export async function updateCartQuantityAction(
       sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
     };
   } catch (error: any) {
+    if (error.message === "TOKEN_EXPIRED") {
+      console.warn("updateCartQuantityAction: Token expired. Clearing session...");
+      await clearSessionCookies();
+      return {
+        success: false,
+        error: "expired_session",
+        clearSession: true,
+        sessionToken: null,
+      };
+    }
+
     console.error("updateCartQuantityAction error:", error);
     return {
       success: false,
@@ -111,6 +194,17 @@ export async function removeFromCartAction(
       sessionToken: newSessionToken || updatedCart.sessionToken || sessionToken || null,
     };
   } catch (error: any) {
+    if (error.message === "TOKEN_EXPIRED") {
+      console.warn("removeFromCartAction: Token expired. Clearing session...");
+      await clearSessionCookies();
+      return {
+        success: false,
+        error: "expired_session",
+        clearSession: true,
+        sessionToken: null,
+      };
+    }
+
     console.error("removeFromCartAction error:", error);
     return {
       success: false,
@@ -174,6 +268,17 @@ export async function checkoutAction(
       sessionToken: newSessionToken || sessionToken || null,
     };
   } catch (error: any) {
+    if (error.message === "TOKEN_EXPIRED") {
+      console.warn("checkoutAction: Token expired. Clearing session...");
+      await clearSessionCookies();
+      return {
+        success: false,
+        error: "expired_session",
+        clearSession: true,
+        sessionToken: null,
+      };
+    }
+
     console.error("checkoutAction error:", error);
     return {
       success: false,

@@ -88,6 +88,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [toastItem, setToastItem] = useState<ToastItem | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Synchronize and update session token in localStorage and state
+  const handleSessionToken = useCallback((newToken: string | null, clearSession?: boolean) => {
+    if (clearSession) {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      setSessionToken(undefined);
+    }
+    if (newToken) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, newToken);
+      setSessionToken(newToken);
+    }
+  }, []);
+
   // Sync token from localStorage on mount
   useEffect(() => {
     const token = localStorage.getItem(LOCAL_STORAGE_KEY) || undefined;
@@ -97,33 +109,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const initCart = async () => {
       setLoading(true);
       const res = await getCartAction(token);
+      handleSessionToken(res.sessionToken, res.clearSession);
+      
       if (res.success && res.cart) {
         setCart(res.cart);
-      }
-      if (res.sessionToken && res.sessionToken !== token) {
-        localStorage.setItem(LOCAL_STORAGE_KEY, res.sessionToken);
-        setSessionToken(res.sessionToken);
       }
       setLoading(false);
     };
 
     initCart();
-  }, []);
-
-  const updateSessionToken = (token: string | null) => {
-    if (token && token !== sessionToken) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, token);
-      setSessionToken(token);
-    }
-  };
+  }, [handleSessionToken]);
 
   const refreshCart = async () => {
     setLoading(true);
     const res = await getCartAction(sessionToken);
+    handleSessionToken(res.sessionToken, res.clearSession);
+    
     if (res.success && res.cart) {
       setCart(res.cart);
     }
-    updateSessionToken(res.sessionToken);
     setLoading(false);
   };
 
@@ -146,7 +150,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = async (productId: number, quantity: number, variationId?: number) => {
     setLoading(true);
     const res = await addToCartAction(productId, quantity, variationId, sessionToken);
-    updateSessionToken(res.sessionToken);
+    handleSessionToken(res.sessionToken, res.clearSession);
     
     if (res.success && res.cart) {
       setCart(res.cart);
@@ -176,7 +180,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQuantity = async (key: string, quantity: number) => {
     setLoading(true);
     const res = await updateCartQuantityAction(key, quantity, sessionToken);
-    updateSessionToken(res.sessionToken);
+    handleSessionToken(res.sessionToken, res.clearSession);
     
     if (res.success && res.cart) {
       setCart(res.cart);
@@ -191,7 +195,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeItem = async (key: string) => {
     setLoading(true);
     const res = await removeFromCartAction([key], sessionToken);
-    updateSessionToken(res.sessionToken);
+    handleSessionToken(res.sessionToken, res.clearSession);
     
     if (res.success && res.cart) {
       setCart(res.cart);

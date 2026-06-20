@@ -68,6 +68,13 @@ export async function fetchGraphQL(
 
   if (json.errors) {
     console.error("[fetchGraphQL] ✖ GraphQL Errors:", JSON.stringify(json.errors, null, 2));
+    const isExpiredToken = json.errors.some(err => 
+      err.message?.includes("invalid_token") || 
+      err.message?.includes("Expired token")
+    );
+    if (isExpiredToken) {
+      throw new Error("TOKEN_EXPIRED");
+    }
     throw new Error("Failed to fetch API");
   }
 
