@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct } from "@/lib/graphql";
+import { fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
+import ProductReviews from "@/app/components/ProductReviews";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -103,6 +104,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
     console.warn("[ProductPage] ⚠ product is null/undefined for slug:", decodedSlug, "→ calling notFound()");
     notFound();
   }
+
+  // Safe fetch reviews in a separate call to protect product details page layout
+  const reviewsData = await getProductReviewsSafe(product.id);
 
   const name = sanitizeTerminology(product.name);
   const description = typeof product.description === 'string' ? sanitizeTerminology(product.description) : "";
@@ -268,6 +272,31 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
         </section>
       )}
+
+      {/* Reviews Section with Terminology Sanitizer and Defensive Guards */}
+      <ProductReviews
+        productId={product.databaseId}
+        initialReviews={(reviewsData.reviews || [])
+          .filter((edge: any) => edge && edge.node)
+          .map((edge: any) => ({
+            rating: edge.rating,
+            node: {
+              id: edge.node.id,
+              databaseId: edge.node.databaseId,
+              content: sanitizeTerminology(edge.node.content || ""),
+              date: edge.node.date,
+              status: edge.node.status,
+              approved: edge.node.approved,
+              author: edge.node.author ? {
+                node: edge.node.author.node ? {
+                  name: sanitizeTerminology(edge.node.author.node.name || "")
+                } : null
+              } : null
+            }
+          }))}
+        averageRating={reviewsData.averageRating || 0}
+        reviewCount={reviewsData.reviewCount || 0}
+      />
     </main>
   );
 }

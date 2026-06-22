@@ -236,6 +236,34 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
   }
 `;
 
+export const GET_PRODUCT_REVIEWS_QUERY = `
+  query GetProductReviews($id: ID!) {
+    product(id: $id, idType: ID) {
+      id
+      averageRating
+      reviewCount
+      reviews(first: 100) {
+        edges {
+          rating
+          node {
+            id
+            databaseId
+            content
+            date
+            status
+            approved
+            author {
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 /* ─────────────── Category Queries ─────────────── */
 
 export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
@@ -417,6 +445,26 @@ export interface WooProduct {
   regularPrice: string | null;
   stockStatus?: string | null;
   stockQuantity?: number | null;
+  averageRating?: number | null;
+  reviewCount?: number | null;
+  reviews?: {
+    edges: {
+      rating: number | null;
+      node: {
+        id: string;
+        databaseId: number;
+        content: string;
+        date: string;
+        status?: string | null;
+        approved?: boolean | null;
+        author?: {
+          node?: {
+            name?: string | null;
+          } | null;
+        } | null;
+      };
+    }[];
+  } | null;
   productCategories?: {
     nodes: {
       name: string;
@@ -471,6 +519,31 @@ export function cleanPrice(priceHtml: string | null | undefined): string | null 
   const cleaned = priceHtml.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
   const match = cleaned.match(/([\d,.]+)/);
   return match ? match[1] : null;
+}
+
+/**
+ * Safe fetch reviews for a product to prevent failures from crashing the main product load
+ */
+export async function getProductReviewsSafe(productId: string): Promise<{
+  reviews: any[];
+  averageRating: number;
+  reviewCount: number;
+}> {
+  try {
+    const { data } = await fetchGraphQL(GET_PRODUCT_REVIEWS_QUERY, { id: productId }, undefined, { revalidate: 60 });
+    return {
+      reviews: data?.product?.reviews?.edges || [],
+      averageRating: data?.product?.averageRating || 0,
+      reviewCount: data?.product?.reviewCount || 0
+    };
+  } catch (error) {
+    console.error("[getProductReviewsSafe] ✖ Fail-safe triggered: Reviews failed to load.", error);
+    return {
+      reviews: [],
+      averageRating: 0,
+      reviewCount: 0
+    };
+  }
 }
 
 /* ─────────────── Cart Queries & Mutations ─────────────── */
