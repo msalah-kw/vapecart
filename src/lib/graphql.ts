@@ -546,6 +546,15 @@ export async function getProductReviewsSafe(productId: string): Promise<{
   }
 }
 
+export const SUBMIT_PRODUCT_REVIEW = `
+  mutation SubmitProductReview($input: WriteReviewInput!) {
+    writeReview(input: $input) {
+      clientMutationId
+      rating
+    }
+  }
+`;
+
 /* ─────────────── Cart Queries & Mutations ─────────────── */
 
 export const GET_CART_QUERY = `

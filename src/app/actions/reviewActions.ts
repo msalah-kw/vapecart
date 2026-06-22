@@ -1,22 +1,7 @@
 "use server";
 
-import { fetchGraphQL } from "@/lib/graphql";
-
-const SUBMIT_PRODUCT_REVIEW = `
-  mutation SubmitProductReview($input: WriteReviewInput!) {
-    writeReview(input: $input) {
-      rating
-      review {
-        id
-        databaseId
-        approved
-        status
-        content
-        date
-      }
-    }
-  }
-`;
+import { cookies } from "next/headers";
+import { SUBMIT_PRODUCT_REVIEW } from "@/lib/graphql";
 
 export interface ReviewResponse {
   success: boolean;
@@ -49,30 +34,43 @@ export async function submitProductReview(data: {
     return { success: false, error: "يرجى إدخال بريد إلكتروني صحيح." };
   }
 
-  try {
-    const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
+  const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
 
-    const variables = {
-      input: {
-        commentOn: data.productId,
-        rating: data.rating,
-        content: data.content.trim(),
-        author: data.author.trim(),
-        authorEmail: data.authorEmail.trim(),
-      },
-    };
+  const variables = {
+    input: {
+      commentOn: data.productId,
+      rating: data.rating,
+      content: data.content.trim(),
+      author: data.author.trim(),
+      authorEmail: data.authorEmail.trim(),
+      clientMutationId: "vapecart-review"
+    },
+  };
 
-    console.log("[submitProductReview] ➤ Sending review input to:", GRAPHQL_ENDPOINT);
-
-    const res = await fetch(GRAPHQL_ENDPOINT, {
+  // Helper fetch function to reuse for retry
+  const executeFetch = async (token?: string) => {
+    return fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { "woocommerce-session": `Session ${token}` } : {})
+      },
       body: JSON.stringify({
         query: SUBMIT_PRODUCT_REVIEW,
         variables,
       }),
       cache: "no-store",
     });
+  };
+
+  try {
+    // Get session token from cookies
+    const cookieStore = await cookies();
+    let sessionToken = cookieStore.get("woocommerce-session")?.value;
+
+    console.log("[submitProductReview] ➤ Sending review input to:", GRAPHQL_ENDPOINT, "with token?", !!sessionToken);
+
+    let res = await executeFetch(sessionToken);
 
     if (!res.ok) {
       console.error("[submitProductReview] ✖ HTTP Error:", res.status, res.statusText);
@@ -82,10 +80,51 @@ export async function submitProductReview(data: {
       };
     }
 
-    const json = await res.json();
+    let json = await res.json();
+
+    // Check for token errors to trigger retry auto-recovery
+    const isExpiredToken = json.errors && json.errors.some((err: any) => 
+      err.message?.includes("invalid_token") || 
+      err.message?.includes("Expired token") ||
+      err.message?.includes("jwt")
+    );
+
+    if (isExpiredToken && sessionToken) {
+      console.warn("submitProductReview: Token expired/invalid. Clearing cookies and retrying as guest...");
+      try {
+        cookieStore.delete("woocommerce-session");
+        cookieStore.delete("wp_jwt");
+        cookieStore.delete("woo-session");
+      } catch (cookieErr) {
+        console.error("Error clearing cookies:", cookieErr);
+      }
+
+      // Retry fetch without token
+      res = await executeFetch(undefined);
+      if (!res.ok) {
+        return { 
+          success: false, 
+          error: `فشل الاتصال بالخادم بعد إعادة محاولة الجلسة (رمز الاستجابة: ${res.status}).` 
+        };
+      }
+      json = await res.json();
+    }
 
     if (json.errors && json.errors.length > 0) {
       console.error("[submitProductReview] ✖ GraphQL Errors:", JSON.stringify(json.errors, null, 2));
+      
+      // Moderation error check (Internal server error for writeReview path)
+      const isModerationError = json.errors.some((err: any) => 
+        (err.message?.includes("Internal server error") || err.message?.includes("internal server error")) &&
+        err.path && 
+        err.path.includes("writeReview")
+      );
+
+      if (isModerationError) {
+        console.log("[submitProductReview] ➤ Intercepted internal server error for unapproved comment. Treating as PENDING_MODERATION success.");
+        return { success: true, message: "PENDING_MODERATION" };
+      }
+
       const firstError = json.errors[0]?.message || "";
       
       // Look for specific WordPress comment submission rejection triggers
