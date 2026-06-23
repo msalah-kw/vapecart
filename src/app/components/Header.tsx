@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG, CategoryNode } from "@/lib/navigation";
 import { useCart } from "@/context/CartContext";
@@ -58,6 +58,7 @@ function CartItemSkeleton() {
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isMiniCartOpen, setIsMiniCartOpen] = useState(false);
   const [expandedDropdowns, setExpandedDropdowns] = useState<Record<string, boolean>>({});
@@ -115,26 +116,15 @@ export default function Header() {
 
       {/* Sticky Main Header */}
       <header className={`main-header ${isScrolled ? "scrolled" : ""}`}>
-        <div className="header-inner container">
-          {/* Mobile Toggler Button (Right on Mobile, Hidden on Desktop) */}
-          <button
-            className={`mobile-menu-toggle mobile-only ${isDrawerOpen ? "active" : ""}`}
-            onClick={toggleDrawer}
-            aria-label="قائمة الأقسام"
-            aria-expanded={isDrawerOpen}
-          >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-          </button>
-
-          {/* Logo (Right on Desktop, Center on Mobile) */}
+        {/* Desktop View */}
+        <div className="desktop-header container desktop-only">
+          {/* Right: Store Logo */}
           <Link href="/" className="site-logo">
             <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
 
-          {/* Desktop Navigation Links (Center on Desktop, Hidden on Mobile) */}
-          <nav className="nav-links desktop-only">
+          {/* Center: Navigation Links */}
+          <nav className="nav-links">
             <Link href="/" className={pathname === "/" ? "active-link" : ""}>
               الرئيسية
             </Link>
@@ -181,56 +171,101 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Actions: Search (both) and Cart (Desktop only) */}
+          {/* Left: Actions */}
           <div className="header-actions">
             {/* Search Icon */}
-            <Link
-              href="/search"
-              className="header-search-link"
+            <button
+              onClick={() => router.push("/search")}
+              className="icon-btn"
               aria-label="البحث عن منتج"
             >
-              <span className="search-icon-wrapper">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </span>
-            </Link>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
 
-            {/* Cart Icon (Desktop Only) */}
+            {/* Cart Icon */}
             <button 
               onClick={() => setIsMiniCartOpen(true)}
-              className="header-cart-link header-cart-button desktop-only" 
+              className="icon-btn" 
               aria-label="سلة التسوق"
             >
-              <span className="cart-icon-wrapper">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <CartBadge />
-              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <CartBadge />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile View */}
+        <div className="mobile-header container mobile-only">
+          <div className="right-col">
+            <button
+              className="icon-btn mobile-menu-toggle"
+              onClick={toggleDrawer}
+              aria-label="قائمة الأقسام"
+              aria-expanded={isDrawerOpen}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="4" y1="6" x2="20" y2="6"></line>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+                <line x1="4" y1="18" x2="20" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div className="center-col">
+            <Link href="/" className="site-logo">
+              <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            </Link>
+          </div>
+
+          <div className="left-col">
+            <button
+              onClick={() => router.push("/search")}
+              className="icon-btn"
+              aria-label="البحث عن منتج"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </button>
           </div>
         </div>
