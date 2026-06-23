@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CartBadge from "@/app/components/CartBadge";
@@ -125,7 +125,9 @@ export default function Header() {
 
           {/* Center: Wide Search Bar */}
           <div className="desktop-search-wrapper">
-            <SearchInput />
+            <Suspense fallback={<div className="search-fallback">جاري التحميل...</div>}>
+              <SearchInput />
+            </Suspense>
           </div>
 
           {/* Left: Account & Cart Icons */}
@@ -254,7 +256,9 @@ export default function Header() {
 
           {/* Row 2: Search Bar */}
           <div className="mobile-header-row-2">
-            <SearchInput />
+            <Suspense fallback={<div className="search-fallback">جاري التحميل...</div>}>
+              <SearchInput />
+            </Suspense>
           </div>
         </div>
       </header>
