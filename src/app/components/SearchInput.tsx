@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-export default function SearchInput() {
+interface SearchInputProps {
+  autoFocus?: boolean;
+}
+
+export default function SearchInput({ autoFocus = false }: SearchInputProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -19,9 +23,16 @@ export default function SearchInput() {
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
+      const trimmedVal = value.trim();
+      const urlQuery = searchParams?.get("q") || "";
+
+      // Avoid redundant transitions
+      if (trimmedVal === urlQuery) {
+        return;
+      }
+
       const currentParams = searchParams ? searchParams.toString() : "";
       const params = new URLSearchParams(currentParams);
-      const trimmedVal = value.trim();
 
       if (trimmedVal) {
         params.set("q", trimmedVal);
@@ -30,14 +41,14 @@ export default function SearchInput() {
       }
 
       const queryStr = params.toString();
-      const nextUrl = queryStr ? `${pathname}?${queryStr}` : pathname;
+      const nextUrl = queryStr ? `/search?${queryStr}` : "/search";
       
       // Update router without hard page reload
       router.push(nextUrl, { scroll: false });
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [value, pathname, router, searchParams]);
+  }, [value, router, searchParams]);
 
   return (
     <div className="search-bar-wrapper">
@@ -48,7 +59,7 @@ export default function SearchInput() {
         placeholder="ابحث عن نكهات، سحبات، كويلات..."
         className="search-bar-input"
         aria-label="حقل البحث"
-        autoFocus
+        autoFocus={autoFocus}
       />
       {value && (
         <button
@@ -59,7 +70,7 @@ export default function SearchInput() {
             const params = new URLSearchParams(currentParams);
             params.delete("q");
             const queryStr = params.toString();
-            const nextUrl = queryStr ? `${pathname}?${queryStr}` : pathname;
+            const nextUrl = queryStr ? `/search?${queryStr}` : "/search";
             router.push(nextUrl, { scroll: false });
           }}
           className="search-bar-clear-btn"

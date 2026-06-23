@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CartBadge from "@/app/components/CartBadge";
+import SearchInput from "@/app/components/SearchInput";
 import { CATEGORIES_CONFIG, CategoryNode } from "@/lib/navigation";
 import { useCart } from "@/context/CartContext";
 
@@ -108,82 +109,29 @@ export default function Header() {
 
   return (
     <>
-      {/* ─── DESKTOP & MOBILE HEADER ─── */}
-      <header className={`site-header ${isScrolled ? "scrolled" : ""}`}>
-        <div className="header-inner">
-          {/* Mobile: Hamburger Button */}
-          <button
-            className={`mobile-menu-toggle ${isDrawerOpen ? "active" : ""}`}
-            onClick={toggleDrawer}
-            aria-label="قائمة الأقسام"
-            aria-expanded={isDrawerOpen}
-          >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-          </button>
+      {/* Top Announcement Bar */}
+      <div className="top-bar">
+        توصيل سريع داخل الكويت 🇰🇼
+      </div>
 
-          {/* Logo */}
+      {/* Sticky Main Header */}
+      <header className={`main-header ${isScrolled ? "scrolled" : ""}`}>
+        {/* Desktop View */}
+        <div className="desktop-header container desktop-only">
+          {/* Right: Store Logo */}
           <Link href="/" className="site-logo">
             <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="nav-links desktop-only">
-            <Link href="/" className={pathname === "/" ? "active-link" : ""}>
-              الرئيسية
-            </Link>
+          {/* Center: Wide Search Bar */}
+          <div className="desktop-search-wrapper">
+            <SearchInput />
+          </div>
 
-            {CATEGORIES_CONFIG.map((cat) => {
-              const hasSubs = cat.subcategories && cat.subcategories.length > 0;
-              const isActive = pathname.startsWith(cat.url) || 
-                (cat.subcategories?.some(sub => pathname.startsWith(sub.url)));
-
-              if (hasSubs) {
-                return (
-                  <div key={cat.slug} className="nav-dropdown-wrapper">
-                    <Link
-                      href={cat.url}
-                      className={`nav-dropdown-trigger ${isActive ? "active-link" : ""}`}
-                    >
-                      {cat.name}
-                      <span className="dropdown-arrow">▼</span>
-                    </Link>
-                    <div className="nav-dropdown-menu">
-                      {cat.subcategories?.map((sub) => (
-                        <Link
-                          key={sub.slug}
-                          href={sub.url}
-                          className={pathname === sub.url ? "active-sub-link" : ""}
-                        >
-                          {sub.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <Link
-                  key={cat.slug}
-                  href={cat.url}
-                  className={pathname === cat.url ? "active-link" : ""}
-                >
-                  {cat.name}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Actions: Search & Cart Icon */}
+          {/* Left: Account & Cart Icons */}
           <div className="header-actions">
-            <Link
-              href="/search"
-              className="header-search-link"
-              aria-label="البحث عن منتج"
-            >
-              <span className="search-icon-wrapper">
+            <Link href="/account" className="header-account-link" aria-label="حسابي">
+              <span className="account-icon-wrapper">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="22"
@@ -195,11 +143,11 @@ export default function Header() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </span>
-              <span className="search-text desktop-only">البحث</span>
+              <span className="account-text">حسابي</span>
             </Link>
 
             <button 
@@ -225,8 +173,88 @@ export default function Header() {
                 </svg>
                 <CartBadge />
               </span>
-              <span className="cart-text desktop-only">السلة</span>
+              <span className="cart-text">السلة</span>
             </button>
+          </div>
+        </div>
+
+        {/* Mobile View */}
+        <div className="mobile-header mobile-only">
+          {/* Row 1 */}
+          <div className="mobile-header-row-1">
+            {/* Right: Hamburger Menu Icon */}
+            <button
+              className={`mobile-menu-toggle ${isDrawerOpen ? "active" : ""}`}
+              onClick={toggleDrawer}
+              aria-label="قائمة الأقسام"
+              aria-expanded={isDrawerOpen}
+            >
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+
+            {/* Center: Store Logo */}
+            <Link href="/" className="site-logo">
+              <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            </Link>
+
+            {/* Left: Cart and WhatsApp Icons */}
+            <div className="mobile-header-actions">
+              <a 
+                href="https://wa.me/96512345678" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="header-whatsapp-link" 
+                aria-label="اتصل بنا عبر واتساب"
+              >
+                <span className="whatsapp-icon-wrapper">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                  </svg>
+                </span>
+              </a>
+
+              <button 
+                onClick={() => setIsMiniCartOpen(true)}
+                className="header-cart-link header-cart-button" 
+                aria-label="سلة التسوق"
+              >
+                <span className="cart-icon-wrapper">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  <CartBadge />
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Row 2: Search Bar */}
+          <div className="mobile-header-row-2">
+            <SearchInput />
           </div>
         </div>
       </header>

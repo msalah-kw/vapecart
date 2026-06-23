@@ -28,7 +28,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <h1 className="search-page-title">البحث عن المنتجات</h1>
       
       <div className="search-bar-section">
-        <SearchInput />
+        <SearchInput autoFocus />
       </div>
 
       <div className="search-results-section" style={{ marginTop: "2rem" }}>
