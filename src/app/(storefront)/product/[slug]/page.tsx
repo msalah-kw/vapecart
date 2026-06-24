@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
+import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 import ProductReviews from "@/app/components/ProductReviews";
@@ -26,13 +27,18 @@ function sanitizeTerminology(text: string): string {
     .replace(/بنك طاقة/gi, "باور بانك");
 }
 
+// Memoized helper to fetch product details and share the network query across metadata & page render lifecycle
+const getProductData = cache(async (slug: string) => {
+  const decodedSlug = decodeURIComponent(slug);
+  const { data } = await fetchGraphQLCached(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 3600 });
+  return data?.product || null;
+});
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
-    const product = data?.product;
+    const product = await getProductData(slug);
 
     if (!product) {
       return {
@@ -93,9 +99,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   let product: WooProduct | null = null;
 
   try {
-    const { data } = await fetchGraphQL(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
-    console.log("[ProductPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
-    product = data?.product;
+    product = await getProductData(slug);
   } catch (error) {
     console.error("[ProductPage] ✖ Error fetching product details:", error);
   }

@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
 
 /**
@@ -86,6 +88,23 @@ export async function fetchGraphQL(
   };
 }
 
+/**
+ * Request-memoized GraphQL fetch wrapper to deduplicate POST requests in the same render pass
+ */
+export const fetchGraphQLCached = cache(
+  async (
+    query: string,
+    variables: Record<string, unknown> = {},
+    sessionToken?: string,
+    options?: {
+      revalidate?: number | false;
+      cache?: RequestCache;
+    }
+  ) => {
+    return fetchGraphQL(query, variables, sessionToken, options);
+  }
+);
+
 /* ─────────────── Product Queries ─────────────── */
 
 export const GET_ALL_PRODUCTS_QUERY = `
@@ -106,14 +125,12 @@ export const GET_ALL_PRODUCTS_QUERY = `
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
         }
         ... on VariableProduct {
           price
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
         }
         productCategories {
           nodes {
@@ -288,14 +305,12 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
         }
         ... on VariableProduct {
           price
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
         }
         productCategories {
           nodes {
@@ -331,30 +346,12 @@ export const GET_PRODUCTS_BY_SEARCH = `
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
         }
         ... on VariableProduct {
           price
           regularPrice
           salePrice
           stockStatus
-          stockQuantity
-          variations {
-            nodes {
-              id
-              databaseId
-              name
-              price
-              regularPrice
-              stockStatus
-              attributes {
-                nodes {
-                  name
-                  value
-                }
-              }
-            }
-          }
         }
         productCategories {
           nodes {
