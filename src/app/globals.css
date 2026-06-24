@@ -3,30 +3,7 @@
    Pure CSS • RTL-first • 1600px Container
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Local Fonts ─── */
-@font-face {
-  font-family: 'Tajawal';
-  src: url('/fonts/tajawal-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
 
-@font-face {
-  font-family: 'Tajawal';
-  src: url('/fonts/tajawal-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Tajawal';
-  src: url('/fonts/tajawal-700.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ─── Custom Properties (Design Tokens) ─── */
 :root {
@@ -68,7 +45,7 @@
   --space-3xl: 4rem;
 
   /* Typography */
-  --font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  --font-family: var(--font-tajawal), 'Segoe UI', Tahoma, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;

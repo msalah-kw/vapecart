@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
+import { Tajawal } from "next/font/google";
 import { preconnect, prefetchDNS } from "react-dom";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  variable: "--font-tajawal",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com"),
@@ -23,7 +31,7 @@ export default function RootLayout({
   prefetchDNS("https://lightgrey-flamingo-522119.hostingersite.com");
 
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" className={tajawal.variable}>
       <body>
         <CartProvider>
           {children}
