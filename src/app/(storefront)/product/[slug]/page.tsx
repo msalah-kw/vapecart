@@ -2,10 +2,35 @@ import { cache } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
-import ProductReviews from "@/app/components/ProductReviews";
+
+const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), {
+  ssr: true,
+  loading: () => (
+    <div 
+      className="skeleton skeleton-active" 
+      style={{ 
+        height: "128px", 
+        borderRadius: "var(--radius-md)", 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center",
+        color: "var(--color-text-muted)",
+        fontSize: "var(--font-size-base)",
+        fontWeight: "500",
+        border: "1px solid var(--color-border)",
+        background: "var(--color-bg-card)",
+        margin: "var(--space-xl) 0"
+      }}
+    >
+      جاري تحميل التقييمات...
+    </div>
+  )
+});
+
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -278,7 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       )}
 
       {/* Reviews Section with Terminology Sanitizer and Defensive Guards */}
-      <ProductReviews
+      <DynamicReviews
         productId={product.databaseId}
         initialReviews={(reviewsData.reviews || [])
           .filter((edge: any) => edge && edge.node)
