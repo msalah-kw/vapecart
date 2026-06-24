@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/app/components/Header";
 import CartToast from "@/app/components/CartToast";
 import MobileBottomNav from "@/app/components/MobileBottomNav";
@@ -28,9 +29,11 @@ export default function StorefrontLayout({
           {/* Column 1: Brand Info */}
           <div className="footer-col footer-brand-col">
             <Link href="/" className="footer-logo">
-              <img 
+              <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png" 
                 alt="سحبة فيب" 
+                width={512}
+                height={512}
               />
             </Link>
             <p className="footer-desc">متجر سحبة فيب الأول لجميع سحبات وبودات ونكهات الفيب في الكويت.</p>

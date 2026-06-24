@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG, CategoryNode } from "@/lib/navigation";
@@ -120,7 +121,13 @@ export default function Header() {
         <div className="desktop-header container desktop-only">
           {/* Right: Store Logo */}
           <Link href="/" className="site-logo">
-            <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            <Image 
+              src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
+              alt="سحبة فيب" 
+              width={400}
+              height={120}
+              priority
+            />
           </Link>
 
           {/* Center: Navigation Links */}
@@ -244,7 +251,13 @@ export default function Header() {
 
           <div className="center-col">
             <Link href="/" className="site-logo">
-              <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+              <Image 
+                src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
+                alt="سحبة فيب" 
+                width={400}
+                height={120}
+                priority
+              />
             </Link>
           </div>
 
@@ -277,7 +290,12 @@ export default function Header() {
       <aside className={`mobile-drawer ${isDrawerOpen ? "open" : ""}`}>
         <div className="drawer-header">
           <Link href="/" className="site-logo" onClick={toggleDrawer}>
-            <img src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" alt="سحبة فيب" />
+            <Image 
+              src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
+              alt="سحبة فيب" 
+              width={400}
+              height={120}
+            />
           </Link>
           <button className="drawer-close" onClick={toggleDrawer} aria-label="إغلاق القائمة">
             ✕

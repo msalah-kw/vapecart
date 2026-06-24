@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { preconnect, prefetchDNS } from "react-dom";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 
@@ -18,6 +19,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  preconnect("https://lightgrey-flamingo-522119.hostingersite.com");
+  prefetchDNS("https://lightgrey-flamingo-522119.hostingersite.com");
+
   return (
     <html lang="ar" dir="rtl">
       <body>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   fetchGraphQL,
   GET_LATEST_PRODUCTS_QUERY,
@@ -59,10 +60,14 @@ export default async function HomePage() {
       <section className="hero-banner" id="hero-banner">
         <div className="container">
           <Link href="/shop" className="banner-link">
-            <img 
+            <Image 
               src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/06/بانر.webp" 
               alt="سحبة فيب - تسوق أفضل السحبات والنكهات في الكويت" 
               className="banner-image"
+              width={1366}
+              height={526}
+              priority
+              sizes="(max-width: 768px) 100vw, 1200px"
             />
           </Link>
         </div>
