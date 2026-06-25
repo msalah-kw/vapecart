@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, stripHtml, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
+import { sanitizeHtml } from "@/lib/sanitize";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 
@@ -328,8 +329,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Short Excerpt */}
           {shortDescription && (
             <div 
-              className="product-short-desc"
-              dangerouslySetInnerHTML={{ __html: shortDescription }}
+              className="product-short-description"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(shortDescription) }}
             />
           )}
 
@@ -367,8 +368,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <section className="product-description-tabs">
           <h2 className="description-tab-header">تفاصيل ومواصفات المنتج</h2>
           <div 
-            className="description-content"
-            dangerouslySetInnerHTML={{ __html: description }}
+            className="product-full-description"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
           />
         </section>
       )}

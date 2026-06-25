@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { submitProductReview } from "@/app/actions/reviewActions";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface ReviewNode {
   id: string;
@@ -185,8 +186,8 @@ export default function ProductReviews({
                       <StarStars rating={reviewRating || 0} size="sm" />
                     </div>
                     <div 
-                      className="review-body"
-                      dangerouslySetInnerHTML={{ __html: reviewContent }}
+                      className="review-content text-gray-700 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHtml(reviewContent) }}
                     />
                   </article>
                 );

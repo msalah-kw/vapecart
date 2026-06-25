@@ -34,7 +34,7 @@ export async function submitProductReview(data: {
     return { success: false, error: "يرجى إدخال بريد إلكتروني صحيح." };
   }
 
-  const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
+  const GRAPHQL_ENDPOINT = process.env.WORDPRESS_API_URL || "https://lightgrey-flamingo-522119.hostingersite.com/graphql";
 
   const variables = {
     input: {

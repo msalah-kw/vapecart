@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { fetchGraphQL, truncateText } from "@/lib/graphql";
+import { sanitizeHtml } from "@/lib/sanitize";
 import ScriptExecutor from "@/app/components/ScriptExecutor";
 
 interface PageProps {
@@ -116,8 +117,8 @@ export default async function StaticPage({ params }: PageProps) {
       <div className="static-page-wrapper">
         <h1 className="static-page-title">{page.title}</h1>
         <div 
-          className="static-page-content"
-          dangerouslySetInnerHTML={{ __html: scopedContent }}
+          className="wp-content"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(scopedContent) }}
         />
         <ScriptExecutor contentHtml={scopedContent} />
       </div>
