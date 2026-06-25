@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
-import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
+import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, cleanPrice, stripHtml, truncateText, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 
@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const attributes = product.attributes?.nodes || [];
   const variations = product.variations?.nodes || [];
 
-  // Product Structured Data (JSON-LD Schema)
+  // ─── Product Structured Data (JSON-LD Schema) ───
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
   const canonicalUrl = `${siteUrl}/product/${product.slug}`;
   
@@ -172,7 +172,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const priceString = cleanPrice(product.price) || "0";
 
-  const jsonLd = {
+  // ─── Dynamic Brand Extraction ───
+  // Attempt to extract brand from product attributes (e.g., 'brand', 'ماركة')
+  const brandAttrNames = ["brand", "pa_brand", "ماركة", "pa_ماركة"];
+  const brandAttr = attributes.find(
+    (attr) => brandAttrNames.includes(attr.name?.toLowerCase()) || brandAttrNames.includes(attr.label?.toLowerCase() ?? "")
+  );
+  const dynamicBrandName = brandAttr?.options?.[0]
+    ? (brandAttr.terms?.nodes?.[0]?.name || stripHtml(brandAttr.options[0]))
+    : (primaryCategory ? sanitizeTerminology(primaryCategory.name) : undefined);
+
+  // ─── Build Product JSON-LD ───
+  const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": name,
@@ -186,8 +197,63 @@ export default async function ProductPage({ params }: ProductPageProps) {
       "price": priceString,
       "priceValidUntil": "2027-12-31",
       "availability": availability,
-      "itemCondition": "https://schema.org/NewCondition"
+      "itemCondition": "https://schema.org/NewCondition",
+      "seller": {
+        "@type": "Organization",
+        "name": "سحبة فيب"
+      }
     }
+  };
+
+  // Inject dynamic brand if resolved
+  if (dynamicBrandName) {
+    jsonLd["brand"] = {
+      "@type": "Brand",
+      "name": dynamicBrandName
+    };
+  }
+
+  // Add AggregateRating only when reviews exist (avoids Google warnings)
+  if (reviewsData.reviewCount > 0 && reviewsData.averageRating > 0) {
+    jsonLd["aggregateRating"] = {
+      "@type": "AggregateRating",
+      "ratingValue": reviewsData.averageRating.toFixed(1),
+      "reviewCount": reviewsData.reviewCount,
+      "bestRating": "5",
+      "worstRating": "1"
+    };
+  }
+
+  // ─── BreadcrumbList JSON-LD ───
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "المتجر",
+        "item": `${siteUrl}/shop`
+      },
+      ...(primaryCategory ? [{
+        "@type": "ListItem",
+        "position": 3,
+        "name": sanitizeTerminology(primaryCategory.name),
+        "item": `${siteUrl}/category/${primaryCategory.slug}`
+      }] : []),
+      {
+        "@type": "ListItem",
+        "position": primaryCategory ? 4 : 3,
+        "name": name,
+        "item": canonicalUrl
+      }
+    ]
   };
 
   return (
@@ -196,6 +262,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Breadcrumb JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
       {/* Breadcrumbs / Navigation Trail */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">

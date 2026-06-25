@@ -144,8 +144,41 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
+
+  // BreadcrumbList JSON-LD
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "المتجر",
+        "item": `${siteUrl}/shop`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": categoryName,
+        "item": `${siteUrl}/category/${decodedSlug}`
+      }
+    ]
+  };
+
   return (
     <div className="container">
+      {/* Breadcrumb JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       {/* Breadcrumbs */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
         <Link href="/">الرئيسية</Link>

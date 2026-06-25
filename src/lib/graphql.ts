@@ -224,12 +224,14 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
       ... on SimpleProduct {
         price
         regularPrice
+        salePrice
         stockStatus
         stockQuantity
       }
       ... on VariableProduct {
         price
         regularPrice
+        salePrice
         stockStatus
         stockQuantity
         variations {
@@ -387,6 +389,19 @@ export const GET_CATEGORIES_QUERY = `
   }
 `;
 
+/* ─────────────── WordPress Pages Query (for Sitemap) ─────────────── */
+
+export const GET_ALL_PAGES_QUERY = `
+  query GetAllPages {
+    pages(first: 100, where: { status: PUBLISH }) {
+      nodes {
+        slug
+        modified
+      }
+    }
+  }
+`;
+
 /* ─────────────── Type Definitions ─────────────── */
 
 export interface WooProduct {
@@ -440,6 +455,7 @@ export interface WooProduct {
   } | null;
   price: string | null;
   regularPrice: string | null;
+  salePrice?: string | null;
   stockStatus?: string | null;
   stockQuantity?: number | null;
   averageRating?: number | null;

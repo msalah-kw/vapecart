@@ -1,4 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "إتمام الطلب | سحبة فيب",
+  robots: { index: false, follow: true },
+};
 
 export default function CheckoutLayout({
   children,

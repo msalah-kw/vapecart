@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "سحبة فيب – متجر فيب إلكتروني | الكويت",
   description:
     "أفضل متجر فيب إلكتروني في الكويت. سحبات جاهزة، بودات، نكهات سولت ونكهات فيب بأسعار منافسة وتوصيل سريع.",
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png",
     apple: "https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png",

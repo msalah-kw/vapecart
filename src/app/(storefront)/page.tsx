@@ -95,9 +95,11 @@ export default async function HomePage() {
                   id={`category-${cat.slug}`}
                 >
                   <div className="category-icon">
-                    <img
+                    <Image
                       src={cat.image}
                       alt={cat.name}
+                      width={120}
+                      height={120}
                       className="category-icon-image"
                     />
                   </div>

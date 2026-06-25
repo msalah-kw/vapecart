@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "المتجر – جميع المنتجات | سحبة فيب",
   description:
     "تصفح جميع منتجات الفيب: سحبات جاهزة، بودات، نكهات سولت، نكهات فيب، كويلات، وأكثر. أسعار بالدينار الكويتي مع توصيل سريع.",
+  alternates: {
+    canonical: "/shop",
+  },
 };
 
 export default async function ShopPage() {
