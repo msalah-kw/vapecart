@@ -7,6 +7,7 @@ import Link from "next/link";
 import { WooProduct, fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY } from "@/lib/graphql";
 import { cleanPrice } from "@/lib/formatters";
 import { useCart } from "@/context/CartContext";
+import { getLocalizedHref } from "@/lib/i18n";
 
 interface ProductCardProps {
   product: WooProduct;
@@ -55,7 +56,7 @@ function cleanAttributeLabel(val: string): string {
   return clean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, lang }: ProductCardProps & { lang: string }) {
   const { addToCart } = useCart();
   
   // Card states
@@ -196,7 +197,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="product-card" id={`product-${product.databaseId}`}>
       {/* 1. Product Image */}
-      <Link href={`/product/${product.slug}`} className="product-card-image-link">
+      <Link href={getLocalizedHref(`/product/${product.slug}`, lang)} className="product-card-image-link">
         <div className="product-card-image">
           {product.image?.sourceUrl ? (
             <Image
@@ -218,7 +219,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Card Content Wrapper */}
       <div className="product-card-body">
         {/* 2. Product Name */}
-        <Link href={`/product/${product.slug}`} className="product-card-title-link">
+        <Link href={getLocalizedHref(`/product/${product.slug}`, lang)} className="product-card-title-link">
           <h3 className="product-card-title">{cleanName}</h3>
         </Link>
 

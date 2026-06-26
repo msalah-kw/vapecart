@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { getLocalizedHref } from "@/lib/i18n";
 
-export default function MobileBottomNav() {
+export default function MobileBottomNav({ lang }: { lang: string }) {
   const pathname = usePathname();
   const { cartItemsCount } = useCart();
 
@@ -21,7 +22,7 @@ export default function MobileBottomNav() {
     <nav className="mobile-bottom-nav" aria-label="شريط التنقل السفلي للهاتف">
       {/* 1. Home Link */}
       <Link
-        href="/"
+        href={getLocalizedHref("/", lang)}
         className={`mobile-nav-item ${isHomeActive ? "active" : ""}`}
         aria-label="الرئيسية"
       >
@@ -46,7 +47,7 @@ export default function MobileBottomNav() {
 
       {/* 2. Search Link */}
       <Link
-        href="/search"
+        href={getLocalizedHref("/search", lang)}
         className={`mobile-nav-item ${isSearchActive ? "active" : ""}`}
         aria-label="البحث"
       >
@@ -71,7 +72,7 @@ export default function MobileBottomNav() {
 
       {/* 3. Shop/Categories Link */}
       <Link
-        href="/shop"
+        href={getLocalizedHref("/shop", lang)}
         className={`mobile-nav-item ${isShopActive ? "active" : ""}`}
         aria-label="الأقسام"
       >
@@ -98,7 +99,7 @@ export default function MobileBottomNav() {
 
       {/* 4. Cart Link */}
       <Link
-        href="/cart"
+        href={getLocalizedHref("/cart", lang)}
         className={`mobile-nav-item ${isCartActive ? "active" : ""}`}
         aria-label="السلة"
       >

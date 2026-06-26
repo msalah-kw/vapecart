@@ -7,11 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG } from "@/lib/navigation";
+import { getLocalizedHref } from "@/lib/i18n";
 
 const DynamicMobileDrawer = dynamic(() => import("./MobileDrawer"), { ssr: false });
 const DynamicMiniCartDrawer = dynamic(() => import("./MiniCartDrawer"), { ssr: false });
 
-export default function Header() {
+export default function Header({ lang }: { lang: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -63,7 +64,7 @@ export default function Header() {
         {/* Desktop View */}
         <div className="desktop-header container desktop-only">
           {/* Right: Store Logo */}
-          <Link href="/" className="site-logo">
+          <Link href={getLocalizedHref("/", lang)} className="site-logo">
             <Image 
               src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
               alt="سحبة فيب" 
@@ -76,7 +77,7 @@ export default function Header() {
 
           {/* Center: Navigation Links */}
           <nav className="nav-links">
-            <Link href="/" className={pathname === "/" ? "active-link" : ""}>
+            <Link href={getLocalizedHref("/", lang)} className={pathname === "/" ? "active-link" : ""}>
               الرئيسية
             </Link>
 
@@ -89,7 +90,7 @@ export default function Header() {
                 return (
                   <div key={cat.slug} className="nav-dropdown-wrapper">
                     <Link
-                      href={cat.url}
+                      href={getLocalizedHref(cat.url, lang)}
                       className={`nav-dropdown-trigger ${isActive ? "active-link" : ""}`}
                     >
                       {cat.name}
@@ -99,7 +100,7 @@ export default function Header() {
                       {cat.subcategories?.map((sub) => (
                         <Link
                           key={sub.slug}
-                          href={sub.url}
+                          href={getLocalizedHref(sub.url, lang)}
                           className={pathname === sub.url ? "active-sub-link" : ""}
                         >
                           {sub.name}
@@ -113,7 +114,7 @@ export default function Header() {
               return (
                 <Link
                   key={cat.slug}
-                  href={cat.url}
+                  href={getLocalizedHref(cat.url, lang)}
                   className={pathname === cat.url ? "active-link" : ""}
                 >
                   {cat.name}
@@ -126,7 +127,7 @@ export default function Header() {
           <div className="header-actions">
             {/* Search Icon */}
             <button
-              onClick={() => router.push("/search")}
+              onClick={() => router.push(getLocalizedHref("/search", lang))}
               className="icon-btn"
               aria-label="البحث عن منتج"
             >
@@ -194,7 +195,7 @@ export default function Header() {
           </div>
 
           <div className="center-col">
-            <Link href="/" className="site-logo">
+            <Link href={getLocalizedHref("/", lang)} className="site-logo">
               <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
                 alt="سحبة فيب" 
@@ -208,7 +209,7 @@ export default function Header() {
 
           <div className="left-col">
             <button
-              onClick={() => router.push("/search")}
+              onClick={() => router.push(getLocalizedHref("/search", lang))}
               className="icon-btn"
               aria-label="البحث عن منتج"
             >

@@ -8,9 +8,10 @@ import {
 } from "@/lib/graphql";
 import { truncateText } from "@/lib/formatters";
 import ProductCard from "@/app/components/ProductCard";
+import { getLocalizedHref } from "@/lib/i18n";
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: string }>;
 }
 
 // Translate/Replace database content to conform with strict terminology requirements
@@ -32,7 +33,7 @@ function sanitizeTerminology(text: string): string {
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
   try {
@@ -40,7 +41,7 @@ export async function generateMetadata({
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 1,
-    }, undefined, { revalidate: 60 });
+    }, undefined, { revalidate: 60, language: lang.toUpperCase() });
 
     const category = data?.productCategory;
 
@@ -94,7 +95,7 @@ export async function generateMetadata({
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const resolvedParams = await params;
   console.log("[CategoryPage] ➤ Raw params:", JSON.stringify(resolvedParams));
-  const { slug } = resolvedParams;
+  const { slug, lang } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
   console.log("[CategoryPage] ➤ Decoded slug:", decodedSlug);
 
@@ -110,7 +111,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 100,
-    }, undefined, { revalidate: 60 });
+    }, undefined, { revalidate: 60, language: lang.toUpperCase() });
 
     console.log("[CategoryPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
 
@@ -181,9 +182,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       />
       {/* Breadcrumbs */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
-        <Link href="/">الرئيسية</Link>
+        <Link href={getLocalizedHref("/", lang)}>الرئيسية</Link>
         <span className="separator">/</span>
-        <Link href="/shop">المتجر</Link>
+        <Link href={getLocalizedHref("/shop", lang)}>المتجر</Link>
         <span className="separator">/</span>
         <span className="current" aria-current="page">
           {categoryName}
@@ -210,7 +211,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {products.length > 0 ? (
           <div className="products-grid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} lang={lang} />
             ))}
           </div>
         ) : (

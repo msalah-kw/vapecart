@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { fetchGraphQLCached, GET_PRODUCT_BY_SLUG_QUERY, WooProduct, getProductReviewsSafe } from "@/lib/graphql";
 import { cleanPrice, stripHtml, truncateText } from "@/lib/formatters";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { getLocalizedHref } from "@/lib/i18n";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 import { VariationProvider } from "./VariationProvider";
@@ -36,7 +37,7 @@ const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), 
 
 
 interface ProductPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: string }>;
 }
 
 // Translate/Replace database content to conform with strict terminology requirements
@@ -56,17 +57,17 @@ function sanitizeTerminology(text: string): string {
 }
 
 // Memoized helper to fetch product details and share the network query across metadata & page render lifecycle
-const getProductData = cache(async (slug: string) => {
+const getProductData = cache(async (slug: string, lang: string) => {
   const decodedSlug = decodeURIComponent(slug);
-  const { data } = await fetchGraphQLCached(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 3600 });
+  const { data } = await fetchGraphQLCached(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 3600, language: lang.toUpperCase() });
   return data?.product || null;
 });
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
 
   try {
-    const product = await getProductData(slug);
+    const product = await getProductData(slug, lang);
 
     if (!product) {
       return {
@@ -120,14 +121,14 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 export default async function ProductPage({ params }: ProductPageProps) {
   const resolvedParams = await params;
   console.log("[ProductPage] ➤ Raw params:", JSON.stringify(resolvedParams));
-  const { slug } = resolvedParams;
+  const { slug, lang } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
   console.log("[ProductPage] ➤ Decoded slug:", decodedSlug);
 
   let product: WooProduct | null = null;
 
   try {
-    product = await getProductData(slug);
+    product = await getProductData(slug, lang);
   } catch (error) {
     console.error("[ProductPage] ✖ Error fetching product details:", error);
   }
@@ -273,13 +274,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
       {/* Breadcrumbs / Navigation Trail */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
-        <Link href="/">الرئيسية</Link>
+        <Link href={getLocalizedHref("/", lang)}>الرئيسية</Link>
         <span className="separator">/</span>
-        <Link href="/shop">المتجر</Link>
+        <Link href={getLocalizedHref("/shop", lang)}>المتجر</Link>
         {primaryCategory && (
           <>
             <span className="separator">/</span>
-            <Link href={`/category/${primaryCategory.slug}`}>
+            <Link href={getLocalizedHref(`/category/${primaryCategory.slug}`, lang)}>
               {sanitizeTerminology(primaryCategory.name)}
             </Link>
           </>
@@ -302,7 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="product-info">
           {primaryCategory && (
             <div className="product-meta-category">
-              <Link href={`/category/${primaryCategory.slug}`}>
+              <Link href={getLocalizedHref(`/category/${primaryCategory.slug}`, lang)}>
                 {sanitizeTerminology(primaryCategory.name)}
               </Link>
             </div>

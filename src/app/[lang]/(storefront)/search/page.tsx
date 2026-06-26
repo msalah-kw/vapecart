@@ -15,10 +15,12 @@ export const metadata: Metadata = {
 };
 
 interface SearchPageProps {
+  params: Promise<{ lang: string }>;
   searchParams: Promise<{ q?: string }>;
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
+export default async function SearchPage({ params, searchParams }: SearchPageProps) {
+  const { lang } = await params;
   const resolvedSearchParams = await searchParams;
   const q = resolvedSearchParams.q;
   const searchQuery = typeof q === "string" ? q.trim() : "";
@@ -36,7 +38,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="search-results-section" style={{ marginTop: "2rem" }}>
         {searchQuery ? (
           <Suspense key={searchQuery} fallback={<ProductGridSkeleton />}>
-            <SearchResultsList searchQuery={searchQuery} />
+            <SearchResultsList searchQuery={searchQuery} lang={lang} />
           </Suspense>
         ) : (
           <div className="search-empty-state">
@@ -49,7 +51,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   );
 }
 
-async function SearchResultsList({ searchQuery }: { searchQuery: string }) {
+async function SearchResultsList({ searchQuery, lang }: { searchQuery: string, lang: string }) {
   let products: WooProduct[] = [];
   let errorMsg = "";
 
@@ -58,7 +60,7 @@ async function SearchResultsList({ searchQuery }: { searchQuery: string }) {
       GET_PRODUCTS_BY_SEARCH,
       { searchQuery },
       undefined,
-      { cache: "no-store" } // Search results shouldn't be cached long-term to ensure freshness
+      { cache: "no-store", language: lang.toUpperCase() } // Search results shouldn't be cached long-term to ensure freshness
     );
     products = data?.products?.nodes || [];
   } catch (error) {
@@ -86,7 +88,7 @@ async function SearchResultsList({ searchQuery }: { searchQuery: string }) {
   return (
     <div className="products-grid">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} lang={lang} />
       ))}
     </div>
   );
