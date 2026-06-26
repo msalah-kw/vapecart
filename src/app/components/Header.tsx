@@ -8,11 +8,12 @@ import dynamic from "next/dynamic";
 import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG } from "@/lib/navigation";
 import { getLocalizedHref } from "@/lib/i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const DynamicMobileDrawer = dynamic(() => import("./MobileDrawer"), { ssr: false });
 const DynamicMiniCartDrawer = dynamic(() => import("./MiniCartDrawer"), { ssr: false });
 
-export default function Header({ lang }: { lang: string }) {
+export default function Header({ lang, dict }: { lang: string; dict: any }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -56,7 +57,7 @@ export default function Header({ lang }: { lang: string }) {
     <>
       {/* Top Announcement Bar */}
       <div className="top-bar">
-        توصيل سريع داخل الكويت 🇰🇼
+        {dict.common.fast_delivery}
       </div>
 
       {/* Sticky Main Header */}
@@ -78,7 +79,7 @@ export default function Header({ lang }: { lang: string }) {
           {/* Center: Navigation Links */}
           <nav className="nav-links">
             <Link href={getLocalizedHref("/", lang)} className={pathname === "/" ? "active-link" : ""}>
-              الرئيسية
+              {dict.navigation.home}
             </Link>
 
             {CATEGORIES_CONFIG.map((cat) => {
@@ -129,7 +130,7 @@ export default function Header({ lang }: { lang: string }) {
             <button
               onClick={() => router.push(getLocalizedHref("/search", lang))}
               className="icon-btn"
-              aria-label="البحث عن منتج"
+              aria-label={dict.common.search_placeholder}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -166,6 +167,9 @@ export default function Header({ lang }: { lang: string }) {
               </svg>
               <CartBadge />
             </button>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher currentLang={lang} />
           </div>
         </div>
 
@@ -211,7 +215,7 @@ export default function Header({ lang }: { lang: string }) {
             <button
               onClick={() => router.push(getLocalizedHref("/search", lang))}
               className="icon-btn"
-              aria-label="البحث عن منتج"
+              aria-label={dict.common.search_placeholder}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -226,6 +230,8 @@ export default function Header({ lang }: { lang: string }) {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
+            {/* Language Switcher for Mobile */}
+            <LanguageSwitcher currentLang={lang} />
           </div>
         </div>
       </header>

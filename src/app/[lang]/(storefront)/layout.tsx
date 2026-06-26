@@ -4,6 +4,7 @@ import Header from "@/app/components/Header";
 import CartToast from "@/app/components/CartToast";
 import MobileBottomNav from "@/app/components/MobileBottomNav";
 import { getLocalizedHref } from "@/lib/i18n";
+import { getDictionary } from "@/lib/dictionaries";
 
 export default async function StorefrontLayout({
   children,
@@ -13,11 +14,12 @@ export default async function StorefrontLayout({
   params: Promise<{ lang: string }>;
 }>) {
   const { lang } = await params;
+  const dict = await getDictionary(lang);
 
   return (
     <div className="page-wrapper">
       {/* ─── Header ─── */}
-      <Header lang={lang} />
+      <Header lang={lang} dict={dict} />
 
       {/* ─── Cart Toast Popup ─── */}
       <CartToast />

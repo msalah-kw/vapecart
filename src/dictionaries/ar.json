@@ -1,0 +1,26 @@
+{
+  "navigation": {
+    "home": "الرئيسية",
+    "search": "البحث",
+    "shop": "الأقسام",
+    "cart": "السلة",
+    "about": "من نحن",
+    "faq": "الأسئلة المتكررة",
+    "privacy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام"
+  },
+  "cart": {
+    "add_to_cart": "أضف إلى السلة",
+    "adding": "جاري الإضافة...",
+    "added_success": "تمت الإضافة بنجاح!",
+    "out_of_stock": "نفدت الكمية",
+    "incomplete_options": "غير متوفر: خيارات غير مكتملة",
+    "select_options": "اختر الخيارات للمتابعة",
+    "complete_options": "أكمل بقية الخيارات",
+    "variation_out_of_stock": "نفدت الكمية (هذا الخيار غير متوفر)"
+  },
+  "common": {
+    "search_placeholder": "البحث عن منتج",
+    "fast_delivery": "توصيل سريع داخل الكويت 🇰🇼"
+  }
+}

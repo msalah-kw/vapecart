@@ -10,6 +10,7 @@ import { getLocalizedHref } from "@/lib/i18n";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 import { VariationProvider } from "./VariationProvider";
+import { getDictionary } from "@/lib/dictionaries";
 
 const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), {
   ssr: true,
@@ -132,6 +133,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   } catch (error) {
     console.error("[ProductPage] ✖ Error fetching product details:", error);
   }
+
+  const dict = await getDictionary(lang);
 
   if (!product) {
     console.warn("[ProductPage] ⚠ product is null/undefined for slug:", decodedSlug, "→ calling notFound()");
@@ -344,6 +347,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             attributes={attributes}
             variations={variations}
             stockStatus={rawStock}
+            dict={dict.cart}
           />
 
           {/* Feature Badges */}
