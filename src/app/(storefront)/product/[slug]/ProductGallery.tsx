@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useVariation } from "./VariationProvider";
 
@@ -18,11 +18,15 @@ interface ProductGalleryProps {
 export default function ProductGallery({ mainImage, galleryImages, productName }: ProductGalleryProps) {
   const { selectedVariationImage } = useVariation();
   const [activeIndex, setActiveIndex] = useState(0);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
-  // Reset active image index to 0 when a variation image is selected
+  // Reset active image index to 0 and scroll into view when a variation image is selected
   useEffect(() => {
     if (selectedVariationImage) {
       setActiveIndex(0);
+      if (galleryRef.current) {
+        galleryRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     }
   }, [selectedVariationImage]);
 
@@ -45,7 +49,7 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
   const activeImage = allImages[activeIndex] || null;
 
   return (
-    <div className="product-gallery">
+    <div className="product-gallery" ref={galleryRef}>
       {/* Main Image */}
       <div className="product-gallery-main">
         {activeImage ? (
