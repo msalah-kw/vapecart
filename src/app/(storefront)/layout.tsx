@@ -34,6 +34,7 @@ export default function StorefrontLayout({
                 alt="سحبة فيب" 
                 width={512}
                 height={512}
+                unoptimized
               />
             </Link>
             <p className="footer-desc">متجر سحبة فيب الأول لجميع سحبات وبودات ونكهات الفيب في الكويت.</p>

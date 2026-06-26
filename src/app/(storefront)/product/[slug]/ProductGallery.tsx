@@ -42,6 +42,7 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
             alt={activeImage.altText || productName}
             fill
             priority
+            unoptimized
             sizes="(max-width: 992px) 100vw, 50vw"
             className="product-gallery-main-image"
           />
@@ -67,6 +68,7 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
                 src={img.sourceUrl}
                 alt={img.altText || `${productName} thumbnail ${index + 1}`}
                 fill
+                unoptimized
                 sizes="80px"
                 style={{ objectFit: "cover" }}
               />

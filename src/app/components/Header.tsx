@@ -70,6 +70,7 @@ export default function Header() {
               width={400}
               height={120}
               priority
+              unoptimized
             />
           </Link>
 
@@ -200,6 +201,7 @@ export default function Header() {
                 width={400}
                 height={120}
                 priority
+                unoptimized
               />
             </Link>
           </div>

@@ -67,6 +67,7 @@ export default async function HomePage() {
               width={1366}
               height={526}
               priority
+              unoptimized
               sizes="(max-width: 768px) 100vw, 1200px"
             />
           </Link>
@@ -100,6 +101,7 @@ export default async function HomePage() {
                       alt={cat.name}
                       width={120}
                       height={120}
+                      unoptimized
                       className="category-icon-image"
                     />
                   </div>

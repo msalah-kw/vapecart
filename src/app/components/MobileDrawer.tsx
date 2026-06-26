@@ -55,6 +55,7 @@ export default function MobileDrawer({ isOpen, onClose, onOpenCart }: MobileDraw
               alt="سحبة فيب" 
               width={400}
               height={120}
+              unoptimized
             />
           </Link>
           <button className="drawer-close" onClick={onClose} aria-label="إغلاق القائمة">
