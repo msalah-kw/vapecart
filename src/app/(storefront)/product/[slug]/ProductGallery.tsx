@@ -20,15 +20,19 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
   const [activeIndex, setActiveIndex] = useState(0);
   const galleryRef = useRef<HTMLDivElement>(null);
 
-  // Reset active image index to 0 and scroll into view when a variation image is selected
+  // Reset active image index to 0 and scroll into view when a UNIQUE variation image is selected
   useEffect(() => {
     if (selectedVariationImage) {
       setActiveIndex(0);
-      if (galleryRef.current) {
-        galleryRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Only scroll if the variation image is different from the main product image
+      if (mainImage?.sourceUrl !== selectedVariationImage.sourceUrl) {
+        if (galleryRef.current) {
+          galleryRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       }
     }
-  }, [selectedVariationImage]);
+  }, [selectedVariationImage, mainImage?.sourceUrl]);
 
   const displayMainImage = selectedVariationImage || mainImage;
 
