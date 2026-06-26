@@ -12,6 +12,8 @@ export async function fetchGraphQL(
   options?: {
     revalidate?: number | false;
     cache?: RequestCache;
+    /** WPGraphQL Polylang — active language code (e.g. "ar", "en") */
+    language?: string;
   }
 ) {
   const headers: Record<string, string> = {
@@ -20,6 +22,11 @@ export async function fetchGraphQL(
 
   if (sessionToken) {
     headers["woocommerce-session"] = `Session ${sessionToken}`;
+  }
+
+  // WPGraphQL Polylang: pass active language via Content-Language header
+  if (options?.language) {
+    headers["Content-Language"] = options.language;
   }
 
   const fetchOptions: RequestInit = {
@@ -99,6 +106,8 @@ export const fetchGraphQLCached = cache(
     options?: {
       revalidate?: number | false;
       cache?: RequestCache;
+      /** WPGraphQL Polylang — active language code (e.g. "ar", "en") */
+      language?: string;
     }
   ) => {
     return fetchGraphQL(query, variables, sessionToken, options);
