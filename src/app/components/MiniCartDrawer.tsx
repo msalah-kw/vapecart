@@ -35,11 +35,7 @@ function cleanAttributeLabel(val: string): string {
   return clean;
 }
 
-// Helper to clean WooCommerce prices (removing HTML entities like &nbsp;)
-function cleanPriceString(priceStr: string | null | undefined): string {
-  if (!priceStr) return "";
-  return priceStr.replace(/&nbsp;/g, " ").replace(/<[^>]*>/g, "").trim();
-}
+import { cleanPrice } from "@/lib/formatters";
 
 function CartItemSkeleton() {
   return (
@@ -162,7 +158,7 @@ export default function MiniCartDrawer({ isOpen, onClose }: MiniCartDrawerProps)
                         </div>
                         
                         <span className="minicart-item-price" style={{ fontSize: "var(--font-size-sm)", fontWeight: "700", color: "var(--color-price)" }}>
-                          {cleanPriceString(item.total)}
+                          {cleanPrice(item.total) || "0.000"}
                         </span>
                       </div>
                     </div>
@@ -186,7 +182,7 @@ export default function MiniCartDrawer({ isOpen, onClose }: MiniCartDrawerProps)
           <div className="minicart-footer" style={{ padding: "var(--space-lg)", borderTop: "1px solid var(--color-border)", background: "var(--color-bg-card)", display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
             <div className="minicart-subtotal" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "var(--font-size-base)" }}>
               <span>المجموع الفرعي:</span>
-              <strong style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--color-price)" }}>{cleanPriceString(cart.subtotal)}</strong>
+              <strong style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--color-price)" }}>{cleanPrice(cart.subtotal) || "0.000"}</strong>
             </div>
             
             <div className="minicart-actions" style={{ display: "flex", gap: "var(--space-sm)" }}>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { fetchGraphQL, truncateText } from "@/lib/graphql";
+import { fetchGraphQL } from "@/lib/graphql";
+import { truncateText } from "@/lib/formatters";
 import { sanitizeHtml } from "@/lib/sanitize";
 import ScriptExecutor from "@/app/components/ScriptExecutor";
 

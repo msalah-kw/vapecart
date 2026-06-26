@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
-import { WooProduct, cleanPrice, fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY } from "@/lib/graphql";
+import { WooProduct, fetchGraphQL, GET_PRODUCT_BY_SLUG_QUERY } from "@/lib/graphql";
+import { cleanPrice } from "@/lib/formatters";
 import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {

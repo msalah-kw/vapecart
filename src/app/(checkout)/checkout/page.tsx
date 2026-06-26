@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { checkoutAction } from "@/app/actions/cart";
-import { cleanPrice } from "@/lib/graphql";
+import { cleanPrice } from "@/lib/formatters";
 
 const KUWAIT_SHIPPING_ZONES = [
   { id: "area-1", name: "اشبيلية", fee: 2 },

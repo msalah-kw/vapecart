@@ -5,8 +5,8 @@ import {
   fetchGraphQL,
   GET_PRODUCTS_BY_CATEGORY_QUERY,
   WooProduct,
-  truncateText,
 } from "@/lib/graphql";
+import { truncateText } from "@/lib/formatters";
 import ProductCard from "@/app/components/ProductCard";
 
 interface CategoryPageProps {

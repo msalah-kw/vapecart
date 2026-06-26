@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { cleanPrice } from "@/lib/graphql";
+import { cleanPrice } from "@/lib/formatters";
 
 // Arabic terminology cleanser for WooCommerce values
 function sanitizeArabic(text: string): string {

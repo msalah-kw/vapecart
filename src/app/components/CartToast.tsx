@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { cleanPrice } from "@/lib/graphql";
+import { cleanPrice } from "@/lib/formatters";
 
 export default function CartToast() {
   const { showCartToast, toastItem, dismissCartToast, cartItemsCount } = useCart();
