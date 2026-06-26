@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useVariation } from "./VariationProvider";
 
 interface ImageNode {
   sourceUrl: string;
@@ -15,10 +16,22 @@ interface ProductGalleryProps {
 }
 
 export default function ProductGallery({ mainImage, galleryImages, productName }: ProductGalleryProps) {
+  const { selectedVariationImage } = useVariation();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Reset active image index to 0 when a variation image is selected
+  useEffect(() => {
+    if (selectedVariationImage) {
+      setActiveIndex(0);
+    }
+  }, [selectedVariationImage]);
+
+  const displayMainImage = selectedVariationImage || mainImage;
+
   // Combine main image with gallery images, filtering out duplicates
   const allImages: ImageNode[] = [];
-  if (mainImage) {
-    allImages.push(mainImage);
+  if (displayMainImage) {
+    allImages.push(displayMainImage);
   }
   
   if (galleryImages) {
@@ -29,7 +42,6 @@ export default function ProductGallery({ mainImage, galleryImages, productName }
     });
   }
 
-  const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = allImages[activeIndex] || null;
 
   return (

@@ -242,6 +242,10 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
             price
             regularPrice
             stockStatus
+            image {
+              sourceUrl
+              altText
+            }
             attributes {
               nodes {
                 name
@@ -445,6 +449,10 @@ export interface WooProduct {
       price: string | null;
       regularPrice: string | null;
       stockStatus?: string | null;
+      image?: {
+        sourceUrl: string;
+        altText?: string;
+      } | null;
       attributes?: {
         nodes: {
           name: string;

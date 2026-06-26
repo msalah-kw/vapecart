@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
+import { useVariation } from "./VariationProvider";
 
 interface AttributeNode {
   name: string;
@@ -24,6 +25,10 @@ interface VariationNode {
   price: string | null;
   regularPrice: string | null;
   stockStatus?: string | null;
+  image?: {
+    sourceUrl: string;
+    altText?: string;
+  } | null;
   attributes?: {
     nodes: {
       name: string;
@@ -68,6 +73,7 @@ function cleanAttributeLabel(val: string): string {
 
 export default function AddToCartForm({ productId, attributes, variations, stockStatus }: AddToCartFormProps) {
   const { addToCart } = useCart();
+  const { setSelectedVariationImage } = useVariation();
   const [quantity, setQuantity] = useState(1);
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [isAdding, setIsAdding] = useState(false);
@@ -108,6 +114,16 @@ export default function AddToCartForm({ productId, attributes, variations, stock
   };
 
   const matchingVariation = isVariable ? findMatchingVariation() : null;
+
+  // Update the globally displayed image when a matching variation is selected
+  useEffect(() => {
+    if (matchingVariation && matchingVariation.image) {
+      setSelectedVariationImage(matchingVariation.image);
+    } else {
+      setSelectedVariationImage(null);
+    }
+  }, [matchingVariation, setSelectedVariationImage]);
+
   const isVariationOutOfStock = matchingVariation
     ? (matchingVariation.stockStatus === "OUT_OF_STOCK" || matchingVariation.stockStatus === "OUTOFSTOCK")
     : false;

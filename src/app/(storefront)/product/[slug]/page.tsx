@@ -8,6 +8,7 @@ import { cleanPrice, stripHtml, truncateText } from "@/lib/formatters";
 import { sanitizeHtml } from "@/lib/sanitize";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
+import { VariationProvider } from "./VariationProvider";
 
 const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), {
   ssr: true,
@@ -288,6 +289,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </nav>
 
       {/* Product Details Grid */}
+      <VariationProvider>
       <div className="product-details-grid">
         {/* Gallery Column */}
         <ProductGallery
@@ -363,6 +365,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
+      </VariationProvider>
 
       {/* Description Section */}
       {description && (
