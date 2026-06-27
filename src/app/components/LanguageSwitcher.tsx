@@ -11,17 +11,17 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: string 
   /**
    * Resolve the target path when switching languages.
    *
-   * For product pages with different slugs per language (e.g. Arabic: "mazaya-vape",
-   * English: "vape-mazaya-5000-puffs"), we look up the correct translated slug from
-   * the `translations` array provided by TranslationsContext.
+   * For translated content pages (products, categories, posts) where each
+   * language has a different slug, we look up the correct translated slug
+   * from the global TranslationsContext.
    *
-   * For all other pages, we fall back to the original behaviour of just
+   * For all other pages, we fall back to the default behaviour of just
    * prepending / stripping the `/en` prefix.
    */
   const getTargetPath = (): string => {
     const targetLang = currentLang === "ar" ? "en" : "ar";
 
-    // ── Check for a translated product slug ──
+    // ── Check for a translated slug from context ──
     if (translations && translations.length > 0) {
       // Polylang returns language codes in uppercase (e.g. "EN", "AR")
       const match = translations.find(
@@ -29,19 +29,26 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: string 
       );
 
       if (match?.slug) {
-        const productPath = `/product/${match.slug}`;
+        // Detect the current route segment (product, category, etc.)
+        const cleanPath = currentLang === "en"
+          ? pathname.replace(/^\/en/, "")
+          : pathname;
+
+        // Extract the route prefix (e.g. "/product/", "/category/")
+        const prefixMatch = cleanPath.match(/^(\/[^/]+\/)/);
+        const routePrefix = prefixMatch ? prefixMatch[1] : "/product/";
+
+        const translatedPath = `${routePrefix}${match.slug}`;
         // Arabic is the default language (no prefix); English uses /en
-        return targetLang === "en" ? `/en${productPath}` : productPath;
+        return targetLang === "en" ? `/en${translatedPath}` : translatedPath;
       }
     }
 
-    // ── Fallback: simple prefix swap for non-product pages ──
+    // ── Fallback: simple prefix swap for generic pages ──
     if (currentLang === "ar") {
-      // Currently Arabic (no prefix) → switch to English (add /en)
       return `/en${pathname === "/" ? "" : pathname}`;
     }
 
-    // Currently English (/en prefix) → switch to Arabic (remove /en)
     if (pathname === "/en") return "/";
     if (pathname.startsWith("/en/")) return pathname.replace(/^\/en/, "");
     return pathname;
@@ -51,7 +58,12 @@ export default function LanguageSwitcher({ currentLang }: { currentLang: string 
   const label = currentLang === "en" ? "عربي" : "EN";
 
   return (
-    <Link href={targetPath} className="language-switcher-btn icon-btn" prefetch={false} style={{ textDecoration: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}>
+    <Link
+      href={targetPath}
+      className="language-switcher-btn icon-btn"
+      prefetch={false}
+      style={{ textDecoration: "none", fontWeight: "bold", fontSize: "0.9rem" }}
+    >
       {label}
     </Link>
   );

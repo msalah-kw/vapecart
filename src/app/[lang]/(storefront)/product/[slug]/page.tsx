@@ -10,7 +10,7 @@ import { getLocalizedHref } from "@/lib/i18n";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 import { VariationProvider } from "./VariationProvider";
-import { TranslationsProvider } from "@/context/TranslationsContext";
+import TranslationSync from "@/app/components/TranslationSync";
 import { getDictionary } from "@/lib/dictionaries";
 
 const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), {
@@ -122,10 +122,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const resolvedParams = await params;
-  console.log("[ProductPage] ➤ Raw params:", JSON.stringify(resolvedParams));
   const { slug, lang } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
-  console.log("[ProductPage] ➤ Decoded slug:", decodedSlug);
 
   let product: WooProduct | null = null;
 
@@ -138,7 +136,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const dict = await getDictionary(lang);
 
   if (!product) {
-    console.warn("[ProductPage] ⚠ product is null/undefined for slug:", decodedSlug, "→ calling notFound()");
     notFound();
   }
 
@@ -268,8 +265,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const translations = product.translations ?? [];
 
   return (
-    <TranslationsProvider translations={translations}>
     <main className="product-page-container container">
+      {/* Sync page translations into the global context for the LanguageSwitcher */}
+      <TranslationSync translations={translations} />
       {/* Product JSON-LD Schema */}
       <script
         type="application/ld+json"
@@ -413,6 +411,5 @@ export default async function ProductPage({ params }: ProductPageProps) {
         reviewCount={reviewsData.reviewCount || 0}
       />
     </main>
-    </TranslationsProvider>
   );
 }

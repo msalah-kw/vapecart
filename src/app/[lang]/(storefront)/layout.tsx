@@ -3,6 +3,7 @@ import Image from "next/image";
 import Header from "@/app/components/Header";
 import CartToast from "@/app/components/CartToast";
 import MobileBottomNav from "@/app/components/MobileBottomNav";
+import { TranslationsProvider } from "@/context/TranslationsContext";
 import { getLocalizedHref } from "@/lib/i18n";
 import { getDictionary } from "@/lib/dictionaries";
 
@@ -17,6 +18,7 @@ export default async function StorefrontLayout({
   const dict = await getDictionary(lang);
 
   return (
+    <TranslationsProvider>
     <div className="page-wrapper">
       {/* ─── Header ─── */}
       <Header lang={lang} dict={dict} />
@@ -88,5 +90,6 @@ export default async function StorefrontLayout({
         </div>
       </footer>
     </div>
+    </TranslationsProvider>
   );
 }
