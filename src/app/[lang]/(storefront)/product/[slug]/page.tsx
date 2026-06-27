@@ -10,6 +10,7 @@ import { getLocalizedHref } from "@/lib/i18n";
 import ProductGallery from "./ProductGallery";
 import AddToCartForm from "./AddToCartForm";
 import { VariationProvider } from "./VariationProvider";
+import { TranslationsProvider } from "@/context/TranslationsContext";
 import { getDictionary } from "@/lib/dictionaries";
 
 const DynamicReviews = dynamic(() => import("@/app/components/ProductReviews"), {
@@ -263,7 +264,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ]
   };
 
+  // ─── Translation slugs for cross-language switching ───
+  const translations = product.translations ?? [];
+
   return (
+    <TranslationsProvider translations={translations}>
     <main className="product-page-container container">
       {/* Product JSON-LD Schema */}
       <script
@@ -408,5 +413,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         reviewCount={reviewsData.reviewCount || 0}
       />
     </main>
+    </TranslationsProvider>
   );
 }

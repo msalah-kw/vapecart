@@ -264,6 +264,12 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
           }
         }
       }
+      translations {
+        slug
+        language {
+          code
+        }
+      }
     }
   }
 `;
@@ -495,6 +501,12 @@ export interface WooProduct {
       };
     }[];
   } | null;
+  translations?: {
+    slug: string;
+    language: {
+      code: string;
+    };
+  }[];
   productCategories?: {
     nodes: {
       name: string;
