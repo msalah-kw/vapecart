@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 const GET_PAGE_BY_SLUG_QUERY = `
-  query GetPageBySlug($id: ID!, $language: LanguageCodeFilterEnum) {
+  query GetPageBySlug($id: ID!) {
     page(id: $id, idType: URI) {
       title
       content
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug, language: lang?.toUpperCase() }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
     const page = data?.page;
 
     if (!page) {
@@ -97,7 +97,7 @@ export default async function StaticPage({ params }: PageProps) {
 
   let page = null;
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug, language: lang?.toUpperCase() }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
     page = data?.page;
   } catch (error) {
     console.error("[StaticPage] Error fetching page:", error);

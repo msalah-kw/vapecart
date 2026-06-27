@@ -180,7 +180,7 @@ export const GET_LATEST_PRODUCTS_QUERY = `
 `;
 
 export const GET_PRODUCT_BY_SLUG_QUERY = `
-  query GetProductBySlug($id: ID!, $language: LanguageCodeFilterEnum) {
+  query GetProductBySlug($id: ID!) {
     product(id: $id, idType: SLUG) {
       id
       databaseId

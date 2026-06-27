@@ -61,7 +61,7 @@ function sanitizeTerminology(text: string): string {
 // Memoized helper to fetch product details and share the network query across metadata & page render lifecycle
 const getProductData = cache(async (slug: string, lang: string) => {
   const decodedSlug = decodeURIComponent(slug);
-  const { data } = await fetchGraphQLCached(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug, language: lang.toUpperCase() }, undefined, { revalidate: 3600, language: lang.toUpperCase() });
+  const { data } = await fetchGraphQLCached(GET_PRODUCT_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 3600, language: lang.toUpperCase() });
   return data?.product || null;
 });
 
