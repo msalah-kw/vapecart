@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function ShopPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
-  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100 }, undefined, { revalidate: 60, language: lang.toUpperCase() });
+  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100, language: lang.toUpperCase() }, undefined, { revalidate: 60, language: lang.toUpperCase() });
   const products: WooProduct[] = data?.products?.nodes ?? [];
 
   return (

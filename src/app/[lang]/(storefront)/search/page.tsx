@@ -58,9 +58,9 @@ async function SearchResultsList({ searchQuery, lang }: { searchQuery: string, l
   try {
     const { data } = await fetchGraphQL(
       GET_PRODUCTS_BY_SEARCH,
-      { searchQuery },
+      { searchQuery, language: lang.toUpperCase() },
       undefined,
-      { cache: "no-store", language: lang.toUpperCase() } // Search results shouldn't be cached long-term to ensure freshness
+      { cache: "no-store", language: lang.toUpperCase() }
     );
     products = data?.products?.nodes || [];
   } catch (error) {

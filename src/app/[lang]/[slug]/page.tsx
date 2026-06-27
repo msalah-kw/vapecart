@@ -6,11 +6,11 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import ScriptExecutor from "@/app/components/ScriptExecutor";
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: string }>;
 }
 
 const GET_PAGE_BY_SLUG_QUERY = `
-  query GetPageBySlug($id: ID!) {
+  query GetPageBySlug($id: ID!, $language: LanguageCodeFilterEnum) {
     page(id: $id, idType: URI) {
       title
       content
@@ -41,11 +41,11 @@ function sanitizeAndScopeHtml(content: string): string {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, lang } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug, language: lang?.toUpperCase() }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
     const page = data?.page;
 
     if (!page) {
@@ -92,22 +92,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function StaticPage({ params }: PageProps) {
   const resolvedParams = await params;
-  console.log("[StaticPage] ➤ Raw params:", JSON.stringify(resolvedParams));
-  const { slug } = resolvedParams;
+  const { slug, lang } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
-  console.log("[StaticPage] ➤ Decoded slug:", decodedSlug);
 
   let page = null;
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
-    console.log("[StaticPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug, language: lang?.toUpperCase() }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
     page = data?.page;
   } catch (error) {
-    console.error("[StaticPage] ✖ Error fetching page details:", error);
+    console.error("[StaticPage] Error fetching page:", error);
   }
 
   if (!page) {
-    console.warn("[StaticPage] ⚠ page is null/undefined for slug:", decodedSlug, "→ calling notFound()");
     notFound();
   }
 

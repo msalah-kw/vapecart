@@ -41,6 +41,7 @@ export async function generateMetadata({
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 1,
+      language: lang.toUpperCase(),
     }, undefined, { revalidate: 60, language: lang.toUpperCase() });
 
     const category = data?.productCategory;
@@ -94,10 +95,8 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const resolvedParams = await params;
-  console.log("[CategoryPage] ➤ Raw params:", JSON.stringify(resolvedParams));
   const { slug, lang } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
-  console.log("[CategoryPage] ➤ Decoded slug:", decodedSlug);
 
   let products: WooProduct[] = [];
   let categoryName = "";
@@ -111,9 +110,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 100,
+      language: lang.toUpperCase(),
     }, undefined, { revalidate: 60, language: lang.toUpperCase() });
 
-    console.log("[CategoryPage] ➤ Raw data received:", JSON.stringify(data)?.substring(0, 500));
+
 
     if (data?.productCategory) {
       isFound = true;
@@ -124,7 +124,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       productCount = data.productCategory.count || 0;
       products = data.products?.nodes ?? [];
     } else {
-      console.warn("[CategoryPage] ⚠ productCategory is null/undefined for slug:", decodedSlug);
     }
   } catch (error) {
     console.error("[CategoryPage] ✖ Error fetching category products:", error);

@@ -49,8 +49,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   /* Fetch data in parallel */
   const [productsRes, categoriesRes] = await Promise.all([
-    fetchGraphQL(GET_LATEST_PRODUCTS_QUERY, { first: 12 }, undefined, { revalidate: 60, language: lang.toUpperCase() }),
-    fetchGraphQL(GET_CATEGORIES_QUERY, {}, undefined, { revalidate: 60, language: lang.toUpperCase() }),
+    fetchGraphQL(GET_LATEST_PRODUCTS_QUERY, { first: 12, language: lang.toUpperCase() }, undefined, { revalidate: 60, language: lang.toUpperCase() }),
+    fetchGraphQL(GET_CATEGORIES_QUERY, { language: lang.toUpperCase() }, undefined, { revalidate: 60, language: lang.toUpperCase() }),
   ]);
 
   const products: WooProduct[] = productsRes.data?.products?.nodes ?? [];

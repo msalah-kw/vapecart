@@ -46,10 +46,7 @@ export async function fetchGraphQL(
     fetchOptions.cache = "no-store";
   }
 
-  // ── DIAGNOSTIC: Log outgoing request ──
-  console.log("[fetchGraphQL] ➤ Endpoint:", GRAPHQL_ENDPOINT);
-  console.log("[fetchGraphQL] ➤ Variables:", JSON.stringify(variables));
-  console.log("[fetchGraphQL] ➤ Query (first 120 chars):", query.trim().substring(0, 120));
+
 
   let res: Response;
   try {
@@ -59,11 +56,7 @@ export async function fetchGraphQL(
     throw networkError;
   }
 
-  // ── DIAGNOSTIC: Log HTTP response status ──
-  console.log("[fetchGraphQL] ➤ HTTP Status:", res.status, res.statusText);
-
   const rawText = await res.text();
-  console.log("[fetchGraphQL] ➤ Raw response body (first 500 chars):", rawText.substring(0, 500));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let json: { data?: Record<string, any>; errors?: any[] };
@@ -87,7 +80,7 @@ export async function fetchGraphQL(
     throw new Error("Failed to fetch API");
   }
 
-  console.log("[fetchGraphQL] ✔ Success — data keys:", json.data ? Object.keys(json.data) : "null");
+
 
   return {
     data: json.data,
@@ -117,8 +110,8 @@ export const fetchGraphQLCached = cache(
 /* ─────────────── Product Queries ─────────────── */
 
 export const GET_ALL_PRODUCTS_QUERY = `
-  query GetAllProducts($first: Int = 100) {
-    products(first: $first) {
+  query GetAllProducts($first: Int = 100, $language: LanguageCodeFilterEnum!) {
+    products(first: $first, where: { language: $language }) {
       nodes {
         id
         slug
@@ -153,8 +146,8 @@ export const GET_ALL_PRODUCTS_QUERY = `
 `;
 
 export const GET_LATEST_PRODUCTS_QUERY = `
-  query GetLatestProducts($first: Int = 12) {
-    products(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
+  query GetLatestProducts($first: Int = 12, $language: LanguageCodeFilterEnum!) {
+    products(first: $first, where: { orderby: { field: DATE, order: DESC }, language: $language }) {
       nodes {
         id
         slug
@@ -187,7 +180,7 @@ export const GET_LATEST_PRODUCTS_QUERY = `
 `;
 
 export const GET_PRODUCT_BY_SLUG_QUERY = `
-  query GetProductBySlug($id: ID!) {
+  query GetProductBySlug($id: ID!, $language: LanguageCodeFilterEnum) {
     product(id: $id, idType: SLUG) {
       id
       databaseId
@@ -309,8 +302,9 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
     $categorySlugId: ID!
     $categorySlugStr: String!
     $first: Int = 100
+    $language: LanguageCodeFilterEnum!
   ) {
-    products(where: { category: $categorySlugStr }, first: $first) {
+    products(where: { category: $categorySlugStr, language: $language }, first: $first) {
       nodes {
         id
         slug
@@ -350,8 +344,8 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
 `;
 
 export const GET_PRODUCTS_BY_SEARCH = `
-  query GetProductsBySearch($searchQuery: String!, $first: Int = 50) {
-    products(where: { search: $searchQuery }, first: $first) {
+  query GetProductsBySearch($searchQuery: String!, $first: Int = 50, $language: LanguageCodeFilterEnum!) {
+    products(where: { search: $searchQuery, language: $language }, first: $first) {
       nodes {
         id
         slug
@@ -386,8 +380,8 @@ export const GET_PRODUCTS_BY_SEARCH = `
 `;
 
 export const GET_CATEGORIES_QUERY = `
-  query GetCategories {
-    productCategories(first: 50, where: { hideEmpty: true }) {
+  query GetCategories($language: LanguageCodeFilterEnum!) {
+    productCategories(first: 50, where: { hideEmpty: true, language: $language }) {
       nodes {
         id
         databaseId
@@ -411,8 +405,8 @@ export const GET_CATEGORIES_QUERY = `
 /* ─────────────── WordPress Pages Query (for Sitemap) ─────────────── */
 
 export const GET_ALL_PAGES_QUERY = `
-  query GetAllPages {
-    pages(first: 100, where: { status: PUBLISH }) {
+  query GetAllPages($language: LanguageCodeFilterEnum) {
+    pages(first: 100, where: { status: PUBLISH, language: $language }) {
       nodes {
         slug
         modified
