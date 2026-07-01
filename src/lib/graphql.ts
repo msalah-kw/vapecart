@@ -12,8 +12,6 @@ export async function fetchGraphQL(
   options?: {
     revalidate?: number | false;
     cache?: RequestCache;
-    /** WPGraphQL Polylang — active language code (e.g. "ar", "en") */
-    language?: string;
   }
 ) {
   const headers: Record<string, string> = {
@@ -22,11 +20,6 @@ export async function fetchGraphQL(
 
   if (sessionToken) {
     headers["woocommerce-session"] = `Session ${sessionToken}`;
-  }
-
-  // WPGraphQL Polylang: pass active language via Content-Language header
-  if (options?.language) {
-    headers["Content-Language"] = options.language;
   }
 
   const fetchOptions: RequestInit = {
@@ -99,8 +92,6 @@ export const fetchGraphQLCached = cache(
     options?: {
       revalidate?: number | false;
       cache?: RequestCache;
-      /** WPGraphQL Polylang — active language code (e.g. "ar", "en") */
-      language?: string;
     }
   ) => {
     return fetchGraphQL(query, variables, sessionToken, options);
@@ -110,8 +101,8 @@ export const fetchGraphQLCached = cache(
 /* ─────────────── Product Queries ─────────────── */
 
 export const GET_ALL_PRODUCTS_QUERY = `
-  query GetAllProducts($first: Int = 100, $language: LanguageCodeFilterEnum!) {
-    products(first: $first, where: { language: $language }) {
+  query GetAllProducts($first: Int = 100) {
+    products(first: $first) {
       nodes {
         id
         slug
@@ -146,8 +137,8 @@ export const GET_ALL_PRODUCTS_QUERY = `
 `;
 
 export const GET_LATEST_PRODUCTS_QUERY = `
-  query GetLatestProducts($first: Int = 12, $language: LanguageCodeFilterEnum!) {
-    products(first: $first, where: { orderby: { field: DATE, order: DESC }, language: $language }) {
+  query GetLatestProducts($first: Int = 12) {
+    products(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
       nodes {
         id
         slug
@@ -257,12 +248,6 @@ export const GET_PRODUCT_BY_SLUG_QUERY = `
           }
         }
       }
-      translations {
-        slug
-        language {
-          code
-        }
-      }
     }
   }
 `;
@@ -302,9 +287,8 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
     $categorySlugId: ID!
     $categorySlugStr: String!
     $first: Int = 100
-    $language: LanguageCodeFilterEnum!
   ) {
-    products(where: { category: $categorySlugStr, language: $language }, first: $first) {
+    products(where: { category: $categorySlugStr }, first: $first) {
       nodes {
         id
         slug
@@ -344,8 +328,8 @@ export const GET_PRODUCTS_BY_CATEGORY_QUERY = `
 `;
 
 export const GET_PRODUCTS_BY_SEARCH = `
-  query GetProductsBySearch($searchQuery: String!, $first: Int = 50, $language: LanguageCodeFilterEnum!) {
-    products(where: { search: $searchQuery, language: $language }, first: $first) {
+  query GetProductsBySearch($searchQuery: String!, $first: Int = 50) {
+    products(where: { search: $searchQuery }, first: $first) {
       nodes {
         id
         slug
@@ -380,8 +364,8 @@ export const GET_PRODUCTS_BY_SEARCH = `
 `;
 
 export const GET_CATEGORIES_QUERY = `
-  query GetCategories($language: LanguageCodeFilterEnum!) {
-    productCategories(first: 50, where: { hideEmpty: true, language: $language }) {
+  query GetCategories {
+    productCategories(first: 50, where: { hideEmpty: true }) {
       nodes {
         id
         databaseId
@@ -405,8 +389,8 @@ export const GET_CATEGORIES_QUERY = `
 /* ─────────────── WordPress Pages Query (for Sitemap) ─────────────── */
 
 export const GET_ALL_PAGES_QUERY = `
-  query GetAllPages($language: LanguageCodeFilterEnum) {
-    pages(first: 100, where: { status: PUBLISH, language: $language }) {
+  query GetAllPages {
+    pages(first: 100, where: { status: PUBLISH }) {
       nodes {
         slug
         modified
@@ -495,12 +479,7 @@ export interface WooProduct {
       };
     }[];
   } | null;
-  translations?: {
-    slug: string;
-    language: {
-      code: string;
-    };
-  }[];
+
   productCategories?: {
     nodes: {
       name: string;

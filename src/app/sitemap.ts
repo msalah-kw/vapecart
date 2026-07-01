@@ -11,9 +11,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch all product, category, and WP page slugs in parallel (Arabic = primary locale for SEO)
   const [productsRes, categoriesRes, pagesRes] = await Promise.all([
-    fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 500, language: "AR" }, undefined, { revalidate: 3600 }),
-    fetchGraphQL(GET_CATEGORIES_QUERY, { language: "AR" }, undefined, { revalidate: 3600 }),
-    fetchGraphQL(GET_ALL_PAGES_QUERY, { language: "AR" }, undefined, { revalidate: 3600 }),
+    fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 500 }, undefined, { revalidate: 3600 }),
+    fetchGraphQL(GET_CATEGORIES_QUERY, {}, undefined, { revalidate: 3600 }),
+    fetchGraphQL(GET_ALL_PAGES_QUERY, {}, undefined, { revalidate: 3600 }),
   ]);
 
   const products = productsRes.data?.products?.nodes ?? [];

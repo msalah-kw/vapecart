@@ -8,10 +8,9 @@ import {
 } from "@/lib/graphql";
 import { truncateText } from "@/lib/formatters";
 import ProductCard from "@/app/components/ProductCard";
-import { getLocalizedHref } from "@/lib/i18n";
 
 interface CategoryPageProps {
-  params: Promise<{ slug: string; lang: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 // Translate/Replace database content to conform with strict terminology requirements
@@ -33,7 +32,7 @@ function sanitizeTerminology(text: string): string {
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const { slug, lang } = await params;
+  const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
   try {
@@ -41,8 +40,7 @@ export async function generateMetadata({
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 1,
-      language: lang.toUpperCase(),
-    }, undefined, { revalidate: 60, language: lang.toUpperCase() });
+    }, undefined, { revalidate: 60 });
 
     const category = data?.productCategory;
 
@@ -95,7 +93,7 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const resolvedParams = await params;
-  const { slug, lang } = resolvedParams;
+  const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
 
   let products: WooProduct[] = [];
@@ -110,10 +108,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categorySlugId: decodedSlug,
       categorySlugStr: decodedSlug,
       first: 100,
-      language: lang.toUpperCase(),
-    }, undefined, { revalidate: 60, language: lang.toUpperCase() });
-
-
+    }, undefined, { revalidate: 60 });
 
     if (data?.productCategory) {
       isFound = true;
@@ -123,7 +118,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       );
       productCount = data.productCategory.count || 0;
       products = data.products?.nodes ?? [];
-    } else {
     }
   } catch (error) {
     console.error("[CategoryPage] ✖ Error fetching category products:", error);
@@ -181,9 +175,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       />
       {/* Breadcrumbs */}
       <nav className="breadcrumbs" aria-label="مسار التنقل">
-        <Link href={getLocalizedHref("/", lang)}>الرئيسية</Link>
+        <Link href="/">الرئيسية</Link>
         <span className="separator">/</span>
-        <Link href={getLocalizedHref("/shop", lang)}>المتجر</Link>
+        <Link href="/shop">المتجر</Link>
         <span className="separator">/</span>
         <span className="current" aria-current="page">
           {categoryName}
@@ -210,7 +204,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         {products.length > 0 ? (
           <div className="products-grid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} lang={lang} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (

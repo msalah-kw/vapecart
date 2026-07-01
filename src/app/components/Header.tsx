@@ -7,13 +7,11 @@ import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import CartBadge from "@/app/components/CartBadge";
 import { CATEGORIES_CONFIG } from "@/lib/navigation";
-import { getLocalizedHref } from "@/lib/i18n";
-import LanguageSwitcher from "./LanguageSwitcher";
 
 const DynamicMobileDrawer = dynamic(() => import("./MobileDrawer"), { ssr: false });
 const DynamicMiniCartDrawer = dynamic(() => import("./MiniCartDrawer"), { ssr: false });
 
-export default function Header({ lang, dict }: { lang: string; dict: any }) {
+export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -57,7 +55,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
     <>
       {/* Top Announcement Bar */}
       <div className="top-bar">
-        {dict.common.fast_delivery}
+        توصيل سريع داخل الكويت 🇰🇼
       </div>
 
       {/* Sticky Main Header */}
@@ -65,7 +63,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
         {/* Desktop View */}
         <div className="desktop-header container desktop-only">
           {/* Right: Store Logo */}
-          <Link href={getLocalizedHref("/", lang)} className="site-logo">
+          <Link href="/" className="site-logo">
             <Image 
               src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
               alt="سحبة فيب" 
@@ -78,8 +76,8 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
 
           {/* Center: Navigation Links */}
           <nav className="nav-links">
-            <Link href={getLocalizedHref("/", lang)} className={pathname === "/" ? "active-link" : ""}>
-              {dict.navigation.home}
+            <Link href="/" className={pathname === "/" ? "active-link" : ""}>
+              الرئيسية
             </Link>
 
             {CATEGORIES_CONFIG.map((cat) => {
@@ -91,7 +89,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
                 return (
                   <div key={cat.slug} className="nav-dropdown-wrapper">
                     <Link
-                      href={getLocalizedHref(cat.url, lang)}
+                      href={cat.url}
                       className={`nav-dropdown-trigger ${isActive ? "active-link" : ""}`}
                     >
                       {cat.name}
@@ -101,7 +99,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
                       {cat.subcategories?.map((sub) => (
                         <Link
                           key={sub.slug}
-                          href={getLocalizedHref(sub.url, lang)}
+                          href={sub.url}
                           className={pathname === sub.url ? "active-sub-link" : ""}
                         >
                           {sub.name}
@@ -115,7 +113,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
               return (
                 <Link
                   key={cat.slug}
-                  href={getLocalizedHref(cat.url, lang)}
+                  href={cat.url}
                   className={pathname === cat.url ? "active-link" : ""}
                 >
                   {cat.name}
@@ -128,9 +126,9 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
           <div className="header-actions">
             {/* Search Icon */}
             <button
-              onClick={() => router.push(getLocalizedHref("/search", lang))}
+              onClick={() => router.push("/search")}
               className="icon-btn"
-              aria-label={dict.common.search_placeholder}
+              aria-label="البحث عن منتج"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -167,9 +165,6 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
               </svg>
               <CartBadge />
             </button>
-
-            {/* Language Switcher */}
-            <LanguageSwitcher currentLang={lang} />
           </div>
         </div>
 
@@ -199,7 +194,7 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
           </div>
 
           <div className="center-col">
-            <Link href={getLocalizedHref("/", lang)} className="site-logo">
+            <Link href="/" className="site-logo">
               <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
                 alt="سحبة فيب" 
@@ -213,9 +208,9 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
 
           <div className="left-col">
             <button
-              onClick={() => router.push(getLocalizedHref("/search", lang))}
+              onClick={() => router.push("/search")}
               className="icon-btn"
-              aria-label={dict.common.search_placeholder}
+              aria-label="البحث عن منتج"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -230,8 +225,6 @@ export default function Header({ lang, dict }: { lang: string; dict: any }) {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
-            {/* Language Switcher for Mobile */}
-            <LanguageSwitcher currentLang={lang} />
           </div>
         </div>
       </header>

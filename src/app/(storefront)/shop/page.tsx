@@ -15,9 +15,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function ShopPage({ params }: { params: Promise<{ lang: string }> }) {
-  const { lang } = await params;
-  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100, language: lang.toUpperCase() }, undefined, { revalidate: 60, language: lang.toUpperCase() });
+export default async function ShopPage() {
+  const { data } = await fetchGraphQL(GET_ALL_PRODUCTS_QUERY, { first: 100 }, undefined, { revalidate: 60 });
   const products: WooProduct[] = data?.products?.nodes ?? [];
 
   return (
@@ -46,7 +45,7 @@ export default async function ShopPage({ params }: { params: Promise<{ lang: str
         {products.length > 0 ? (
           <div className="products-grid">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} lang={lang} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (

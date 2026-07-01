@@ -3,25 +3,16 @@ import Image from "next/image";
 import Header from "@/app/components/Header";
 import CartToast from "@/app/components/CartToast";
 import MobileBottomNav from "@/app/components/MobileBottomNav";
-import { TranslationsProvider } from "@/context/TranslationsContext";
-import { getLocalizedHref } from "@/lib/i18n";
-import { getDictionary } from "@/lib/dictionaries";
 
 export default async function StorefrontLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ lang: string }>;
 }>) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
-
   return (
-    <TranslationsProvider>
     <div className="page-wrapper">
       {/* ─── Header ─── */}
-      <Header lang={lang} dict={dict} />
+      <Header />
 
       {/* ─── Cart Toast Popup ─── */}
       <CartToast />
@@ -30,14 +21,14 @@ export default async function StorefrontLayout({
       <div className="main-content">{children}</div>
 
       {/* ─── Mobile Bottom Navigation ─── */}
-      <MobileBottomNav lang={lang} />
+      <MobileBottomNav />
 
       {/* ─── Footer ─── */}
       <footer className="site-footer">
         <div className="container footer-container">
           {/* Column 1: Brand Info */}
           <div className="footer-col footer-brand-col">
-            <Link href={getLocalizedHref("/", lang)} className="footer-logo">
+            <Link href="/" className="footer-logo">
               <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png" 
                 alt="سحبة فيب" 
@@ -53,9 +44,9 @@ export default async function StorefrontLayout({
           <div className="footer-col">
             <h3>معلومات إضافية</h3>
             <ul>
-              <li><Link href={getLocalizedHref("/about-us", lang)}>من نحن</Link></li>
-              <li><Link href={getLocalizedHref("/faq", lang)}>الأسئلة المتكررة</Link></li>
-              <li><Link href={getLocalizedHref("/disclaimer", lang)}>إخلاء المسؤولية</Link></li>
+              <li><Link href="/about-us">من نحن</Link></li>
+              <li><Link href="/faq">الأسئلة المتكررة</Link></li>
+              <li><Link href="/disclaimer">إخلاء المسؤولية</Link></li>
             </ul>
           </div>
 
@@ -63,9 +54,9 @@ export default async function StorefrontLayout({
           <div className="footer-col">
             <h3>السياسات والقوانين</h3>
             <ul>
-              <li><Link href={getLocalizedHref("/privacy-policy", lang)}>سياسة الخصوصية</Link></li>
-              <li><Link href={getLocalizedHref("/refund_returns", lang)}>سياسة الاستبدال والاسترجاع</Link></li>
-              <li><Link href={getLocalizedHref("/terms-conditions", lang)}>الشروط والأحكام</Link></li>
+              <li><Link href="/privacy-policy">سياسة الخصوصية</Link></li>
+              <li><Link href="/refund_returns">سياسة الاستبدال والاسترجاع</Link></li>
+              <li><Link href="/terms-conditions">الشروط والأحكام</Link></li>
             </ul>
           </div>
 
@@ -90,6 +81,5 @@ export default async function StorefrontLayout({
         </div>
       </footer>
     </div>
-    </TranslationsProvider>
   );
 }

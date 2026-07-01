@@ -42,7 +42,6 @@ interface AddToCartFormProps {
   attributes: AttributeNode[] | null;
   variations: VariationNode[] | null;
   stockStatus?: string | null;
-  dict: any;
 }
 
 // Helper to safely URL-decode values (avoiding URIError)
@@ -72,7 +71,7 @@ function cleanAttributeLabel(val: string): string {
   return clean;
 }
 
-export default function AddToCartForm({ productId, attributes, variations, stockStatus, dict }: AddToCartFormProps) {
+export default function AddToCartForm({ productId, attributes, variations, stockStatus }: AddToCartFormProps) {
   const { addToCart } = useCart();
   const { setSelectedVariationImage } = useVariation();
   const [quantity, setQuantity] = useState(1);
@@ -147,20 +146,20 @@ export default function AddToCartForm({ productId, attributes, variations, stock
   };
 
   // Determine button label text
-  let btnText = dict.add_to_cart;
+  let btnText = "أضف إلى السلة";
   if (isAdding) {
-    btnText = dict.adding;
+    btnText = "جاري الإضافة...";
   } else if (success) {
-    btnText = dict.added_success;
+    btnText = "تمت الإضافة بنجاح!";
   } else if (isOutOfStock) {
-    btnText = dict.out_of_stock;
+    btnText = "نفدت الكمية";
   } else if (variationsIncomplete) {
-    btnText = dict.incomplete_options;
+    btnText = "غير متوفر: خيارات غير مكتملة";
   } else if (isVariable && !matchingVariation) {
     const selectedCount = Object.keys(selectedAttributes).length;
-    btnText = selectedCount === 0 ? dict.select_options : dict.complete_options;
+    btnText = selectedCount === 0 ? "اختر الخيارات للمتابعة" : "أكمل بقية الخيارات";
   } else if (isVariable && isVariationOutOfStock) {
-    btnText = dict.variation_out_of_stock;
+    btnText = "نفدت الكمية (هذا الخيار غير متوفر)";
   }
 
   return (

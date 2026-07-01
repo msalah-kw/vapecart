@@ -15,12 +15,10 @@ export const metadata: Metadata = {
 };
 
 interface SearchPageProps {
-  params: Promise<{ lang: string }>;
   searchParams: Promise<{ q?: string }>;
 }
 
-export default async function SearchPage({ params, searchParams }: SearchPageProps) {
-  const { lang } = await params;
+export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolvedSearchParams = await searchParams;
   const q = resolvedSearchParams.q;
   const searchQuery = typeof q === "string" ? q.trim() : "";
@@ -38,7 +36,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
       <div className="search-results-section" style={{ marginTop: "2rem" }}>
         {searchQuery ? (
           <Suspense key={searchQuery} fallback={<ProductGridSkeleton />}>
-            <SearchResultsList searchQuery={searchQuery} lang={lang} />
+            <SearchResultsList searchQuery={searchQuery} />
           </Suspense>
         ) : (
           <div className="search-empty-state">
@@ -51,16 +49,16 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   );
 }
 
-async function SearchResultsList({ searchQuery, lang }: { searchQuery: string, lang: string }) {
+async function SearchResultsList({ searchQuery }: { searchQuery: string }) {
   let products: WooProduct[] = [];
   let errorMsg = "";
 
   try {
     const { data } = await fetchGraphQL(
       GET_PRODUCTS_BY_SEARCH,
-      { searchQuery, language: lang.toUpperCase() },
+      { searchQuery },
       undefined,
-      { cache: "no-store", language: lang.toUpperCase() }
+      { cache: "no-store" }
     );
     products = data?.products?.nodes || [];
   } catch (error) {
@@ -88,7 +86,7 @@ async function SearchResultsList({ searchQuery, lang }: { searchQuery: string, l
   return (
     <div className="products-grid">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} lang={lang} />
+        <ProductCard key={product.id} product={product} />
       ))}
     </div>
   );

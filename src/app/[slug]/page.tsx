@@ -6,7 +6,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import ScriptExecutor from "@/app/components/ScriptExecutor";
 
 interface PageProps {
-  params: Promise<{ slug: string; lang: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 const GET_PAGE_BY_SLUG_QUERY = `
@@ -41,11 +41,11 @@ function sanitizeAndScopeHtml(content: string): string {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug, lang } = await params;
+  const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
 
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     const page = data?.page;
 
     if (!page) {
@@ -92,12 +92,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function StaticPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const { slug, lang } = resolvedParams;
+  const { slug } = resolvedParams;
   const decodedSlug = decodeURIComponent(slug);
 
   let page = null;
   try {
-    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60, language: lang?.toUpperCase() });
+    const { data } = await fetchGraphQL(GET_PAGE_BY_SLUG_QUERY, { id: decodedSlug }, undefined, { revalidate: 60 });
     page = data?.page;
   } catch (error) {
     console.error("[StaticPage] Error fetching page:", error);
