@@ -18,7 +18,7 @@ export default function MobileBottomNav() {
   const isCartActive = pathname === "/cart";
 
   return (
-    <nav className="mobile-bottom-nav" aria-label="شريط التنقل السفلي للهاتف">
+    <nav className="mobile-nav-container" aria-label="شريط التنقل السفلي للهاتف">
       {/* 1. Home Link */}
       <Link
         href="/"
@@ -69,11 +69,11 @@ export default function MobileBottomNav() {
         <span className="mobile-nav-label">البحث</span>
       </Link>
 
-      {/* 3. Shop/Categories Link */}
+      {/* 3. Shop/Store Link */}
       <Link
         href="/shop"
         className={`mobile-nav-item ${isShopActive ? "active" : ""}`}
-        aria-label="الأقسام"
+        aria-label="المتجر"
       >
         <span className="mobile-nav-icon">
           <svg
@@ -87,13 +87,14 @@ export default function MobileBottomNav() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <path d="m2 7 4.41-3.67A2 2 0 0 1 7.7 3h8.6a2 2 0 0 1 1.29.33L22 7" />
+            <path d="M3 12h18" />
+            <path d="M3 7v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7" />
+            <path d="M9 22V12" />
+            <path d="M15 22V12" />
           </svg>
         </span>
-        <span className="mobile-nav-label">الأقسام</span>
+        <span className="mobile-nav-label">المتجر</span>
       </Link>
 
       {/* 4. Cart Link */}

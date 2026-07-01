@@ -3952,39 +3952,39 @@ ol {
 }
 
 /* ═══════════════════════════════════════════════════════
-   MOBILE BOTTOM NAVIGATION BAR
+   MOBILE BOTTOM NAVIGATION BAR (FLOATING PILL DESIGN)
    ═══════════════════════════════════════════════════════ */
-.mobile-bottom-nav {
+/* BRANDING_TODO: Update Mobile Nav Colors */
+.mobile-nav-container {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 130; /* Under mobile drawer (150) and overlay (140) but over normal content */
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px) saturate(1.8);
-  -webkit-backdrop-filter: blur(20px) saturate(1.8);
-  border-top: 1px solid var(--color-border);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-  padding-bottom: env(safe-area-inset-bottom);
-  height: calc(60px + env(safe-area-inset-bottom));
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  border-radius: 9999px;
+  background: #282834; /* Dark solid brand background */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   display: none; /* Hidden by default (desktop) */
-  justify-content: space-around;
+  gap: 8px;
+  justify-content: center;
   align-items: center;
+  padding: 10px 14px;
+  z-index: 1000; /* High z-index to stay above page content */
   direction: rtl;
 }
 
 .mobile-nav-item {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex: 1;
-  height: 100%;
-  color: var(--color-text-secondary);
+  gap: 0;
+  border-radius: 9999px;
+  padding: 10px 12px;
+  color: #d4ed9a; /* Bright accent color for inactive icons */
   text-decoration: none;
   font-family: var(--font-family);
-  transition: transform var(--transition-fast), color var(--transition-fast);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -3992,7 +3992,7 @@ ol {
 }
 
 .mobile-nav-item:active {
-  transform: scale(0.9);
+  transform: scale(0.95);
 }
 
 .mobile-nav-icon {
@@ -4000,36 +4000,44 @@ ol {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
-  width: 24px;
-  margin-bottom: 2px;
-  color: var(--color-text-muted);
-  transition: color var(--transition-fast);
+  height: 22px;
+  width: 22px;
+  color: inherit;
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mobile-nav-label {
-  font-size: 10px;
-  font-weight: 500;
-  transition: font-weight var(--transition-fast), color var(--transition-fast);
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: inherit;
 }
 
 /* Active State Logic */
 .mobile-nav-item.active {
-  color: var(--color-accent);
+  background: #d4ed9a; /* Active state background changes to bright accent */
+  color: #282834; /* Active icon and text color invert to dark background */
+  gap: 8px;
 }
 
 .mobile-nav-item.active .mobile-nav-icon {
-  color: var(--color-accent);
+  color: #282834;
 }
 
 .mobile-nav-item.active .mobile-nav-label {
-  font-weight: 700;
+  max-width: 120px;
+  opacity: 1;
+  margin-inline-start: 4px; /* Pure RTL logical property */
 }
 
 /* Cart Badge Styling */
 .mobile-nav-cart-badge {
   position: absolute;
-  top: -4px;
+  top: -6px;
   right: -8px;
   background-color: var(--color-accent);
   color: #ffffff;
@@ -4043,18 +4051,23 @@ ol {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-sm);
-  border: 1.5px solid #ffffff;
+  border: 1.5px solid #282834; /* Border matches container background color */
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-nav-item.active .mobile-nav-cart-badge {
+  border-color: #d4ed9a; /* Border matches active item background color */
 }
 
 /* Media Queries for Responsive Visibility */
 @media (max-width: 768px) {
-  .mobile-bottom-nav {
+  .mobile-nav-container {
     display: flex;
   }
 
-  /* Prevent footer or other bottom content from being hidden */
+  /* Prevent footer or other bottom content from being hidden by floating nav */
   .page-wrapper {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
   }
 }
 
