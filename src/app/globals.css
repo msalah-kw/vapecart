@@ -7,6 +7,7 @@
 
 /* ─── Custom Properties (Design Tokens) ─── */
 :root {
+  /* BRANDING_TODO: Customize colors to match the new e-commerce brand identity */
   /* Color Palette */
   --color-bg: #f8fafc;
   --color-bg-elevated: #ffffff;
@@ -20,6 +21,7 @@
   --color-text-secondary: #475569;
   --color-text-muted: #94a3b8;
 
+  /* BRANDING_TODO: Replace accent/logo brand colors with the new identity theme colors */
   /* Accent – Logo Red */
   --color-accent: #e61c24;
   --color-accent-light: #ff3b43;
@@ -44,6 +46,7 @@
   --space-2xl: 3rem;
   --space-3xl: 4rem;
 
+  /* BRANDING_TODO: Customize font families and typography values if a custom font is used */
   /* Typography */
   --font-family: var(--font-tajawal), 'Segoe UI', Tahoma, sans-serif;
   --font-size-xs: 0.75rem;

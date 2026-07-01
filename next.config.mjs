@@ -5,6 +5,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        // BRANDING_TODO: Replace hostname with your WooCommerce/WordPress backend media domain.
         hostname: "lightgrey-flamingo-522119.hostingersite.com",
         pathname: "/wp-content/uploads/**",
       },
@@ -50,9 +51,11 @@ const nextConfig = {
         has: [
           {
             type: 'host',
+            // BRANDING_TODO: Replace value with the www version of your brand domain.
             value: 'www.sahbavape.com',
           },
         ],
+        // BRANDING_TODO: Replace destination with your primary canonical apex domain.
         destination: 'https://sahbavape.com/:path*',
         permanent: true,
       },

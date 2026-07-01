@@ -8,9 +8,15 @@ This document defines the high-level context, environment, and core settings for
 
 The project is structured as a modern, decoupled Headless E-commerce application:
 
-* **Frontend:** Next.js (App Router) + TypeScript + Tailwind CSS (using utility classes and custom semantic variables defined in CSS variables).
+* **Frontend:** Next.js (App Router) + TypeScript + Vanilla CSS (using custom semantic variables defined in `src/app/globals.css` with a pure HTML/CSS structure, no Tailwind).
 * **Backend:** Headless WordPress (WooCommerce) + WPGraphQL + WooGraphQL.
 * **API Endpoint:** `https://lightgrey-flamingo-522119.hostingersite.com/graphql`
+
+---
+
+## 🔄 i18n Rollback & Single-Language Architecture
+
+The codebase operates on a high-performance, single-language Arabic structure. The previous i18n/Polylang multi-language implementation was permanently rolled back to prioritize maximum loading speed, clean DOM rendering, and simple, flat SEO routing. All page layout templates default strictly to `lang="ar"` and `dir="rtl"`.
 
 ---
 

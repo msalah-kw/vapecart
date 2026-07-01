@@ -7,8 +7,8 @@ This document outlines the visual, styling, typographic, and runtime safety guid
 ## 🎨 Styling & Layout System
 
 1. **Aesthetics & Performance:**
-   - Use Next.js (App Router) + TypeScript + Tailwind CSS as the core styling framework.
-   - Supplement with pure CSS variables in `globals.css` to govern the core design system tokens (colors, spacings, border radii, shadows).
+   - Use Next.js (App Router) + TypeScript + Vanilla CSS variables in `src/app/globals.css` as the core styling system (no Tailwind, no external UI widgets).
+   - All styling rules must rely on CSS logical properties (e.g., `margin-inline-start`, `padding-inline-end`, `inset-inline-start`) to naturally support the Arabic RTL flow without duplicate absolute overrides.
    - Ensure the layout is fluid and fully responsive on all mobile, tablet, and desktop breakpoints.
 2. **Container Boundary:**
    - The maximum layout container width must be restricted to exactly `1600px`.

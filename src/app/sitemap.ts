@@ -7,6 +7,7 @@ import {
 } from "@/lib/graphql";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // BRANDING_TODO: Replace fallback domain URL with your primary production site domain.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sahbavape.com";
 
   // Fetch all product, category, and WP page slugs in parallel (Arabic = primary locale for SEO)

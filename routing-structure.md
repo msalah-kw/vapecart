@@ -9,23 +9,37 @@ This document defines the Next.js directory structure, routing rules, dynamic se
 ```text
 src/
 └── app/
-    ├── layout.tsx               # Root Layout with global metadata & fonts
-    ├── page.tsx                 # Homepage (Top categories and featured products)
-    ├── shop/
-    │   └── page.tsx             # Product Catalog listing
-    ├── product/
-    │   └── [slug]/
-    │       └── page.tsx         # Single Product Detail (Dynamic metadata and JSON-LD)
-    ├── category/
-    │   └── [slug]/
-    │       └── page.tsx         # Category Catalog (Dynamic pagination and metadata)
-    ├── cart/
-    │   └── page.tsx             # Shopping Cart (Client-side)
-    ├── checkout/
-    │   └── page.tsx             # Checkout Flow
-    ├── sitemap.ts               # Dynamic Sitemap generator
-    ├── robots.ts                # Dynamic Robots.txt provider
-    └── globals.css              # Global styles, Tailwind directives & custom CSS
+    ├── layout.tsx               # Root Layout (lang="ar", dir="rtl" defaults, Tajawal font)
+    ├── error.tsx                # Global client-side Error Boundary
+    ├── sitemap.ts               # Dynamic single-language sitemap generator
+    ├── robots.ts                # Robots.txt configuration (blocks cart/checkout)
+    ├── globals.css              # Global styles, variables & CSS logical properties
+    ├── [slug]/
+    │   └── page.tsx             # Dynamic pages fetched by WordPress URI
+    ├── (checkout)/              # Route Group for checkout-specific styling shell
+    │   ├── layout.tsx           # Minimalist secure header layout
+    │   └── checkout/
+    │       ├── page.tsx         # Secure guest checkout forms
+    │       └── success/
+    │           └── page.tsx     # Order completion COD landing page
+    └── (storefront)/            # Route Group for standard storefront layout shell
+        ├── layout.tsx           # Main header, footer, cart drawers
+        ├── page.tsx             # Homepage (Hero, core categories, latest products)
+        ├── shop/
+        │   └── page.tsx         # All products catalog list
+        ├── cart/
+        │   └── page.tsx         # Client cart summary page
+        ├── search/
+        │   └── page.tsx         # AJAX search list
+        ├── category/
+        │   └── [slug]/
+        │       └── page.tsx     # Product grid filter by category slug
+        └── product/
+            └── [slug]/
+                ├── page.tsx     # Single product page (JSON-LD aggregate ratings)
+                ├── AddToCartForm.tsx
+                ├── ProductGallery.tsx
+                └── VariationProvider.tsx
 ```
 
 ---

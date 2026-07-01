@@ -29,6 +29,7 @@ export default async function StorefrontLayout({
           {/* Column 1: Brand Info */}
           <div className="footer-col footer-brand-col">
             <Link href="/" className="footer-logo">
+              {/* BRANDING_TODO: Replace footer brand logo icon, width, height, and altText */}
               <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape-icon.png" 
                 alt="سحبة فيب" 
@@ -37,6 +38,7 @@ export default async function StorefrontLayout({
                 unoptimized
               />
             </Link>
+            {/* BRANDING_TODO: Customize brand description paragraph */}
             <p className="footer-desc">متجر سحبة فيب الأول لجميع سحبات وبودات ونكهات الفيب في الكويت.</p>
           </div>
 
@@ -67,6 +69,7 @@ export default async function StorefrontLayout({
               <li>أوقات العمل: طوال أيام الأسبوع</li>
               <li>ساعات الخدمة: 24 ساعة خدمة سريعة</li>
               <li>
+                {/* BRANDING_TODO: Replace WhatsApp API url link and display number */}
                 <a href="https://wa.me/96555727313" target="_blank" rel="noopener noreferrer" className="footer-whatsapp-link">
                   💬 دعم واتساب: 96555727313+
                 </a>
@@ -76,6 +79,7 @@ export default async function StorefrontLayout({
         </div>
         <div className="footer-bottom">
           <div className="container">
+            {/* BRANDING_TODO: Customize bottom copyright store name */}
             <p>© {new Date().getFullYear()} سحبة فيب – جميع الحقوق محفوظة</p>
           </div>
         </div>

@@ -55,6 +55,7 @@ export default function Header() {
     <>
       {/* Top Announcement Bar */}
       <div className="top-bar">
+        {/* BRANDING_TODO: Customize fallback announcement bar message */}
         توصيل سريع داخل الكويت 🇰🇼
       </div>
 
@@ -64,6 +65,7 @@ export default function Header() {
         <div className="desktop-header container desktop-only">
           {/* Right: Store Logo */}
           <Link href="/" className="site-logo">
+            {/* BRANDING_TODO: Replace desktop logo sourceUrl, height, width, and altText */}
             <Image 
               src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
               alt="سحبة فيب" 
@@ -195,6 +197,7 @@ export default function Header() {
 
           <div className="center-col">
             <Link href="/" className="site-logo">
+              {/* BRANDING_TODO: Replace mobile logo sourceUrl, height, width, and altText */}
               <Image 
                 src="https://lightgrey-flamingo-522119.hostingersite.com/wp-content/uploads/2026/02/sahbavape.webp" 
                 alt="سحبة فيب" 
